@@ -22,6 +22,7 @@ int main()
 		// draw
 		BeginDrawing();
 			DrawText("Hello World", SCREEN_W / 2, SCREEN_H / 2, 20, GRAY);
+			DrawText("hello", 10, 10, 20, GRAY);
 		EndDrawing();
 	}
 }
