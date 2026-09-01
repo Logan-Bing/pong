@@ -1,4 +1,0 @@
-/Users/logan/code/c++/pong/build/CMakeFiles/pong.dir
-/Users/logan/code/c++/pong/build/CMakeFiles/copy_compile_commands.dir
-/Users/logan/code/c++/pong/build/CMakeFiles/edit_cache.dir
-/Users/logan/code/c++/pong/build/CMakeFiles/rebuild_cache.dir

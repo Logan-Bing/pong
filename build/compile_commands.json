@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/logan/code/c++/pong/build",
-  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk/System/Library/Frameworks  -o CMakeFiles/pong.dir/main.cpp.o -c /Users/logan/code/c++/pong/main.cpp",
-  "file": "/Users/logan/code/c++/pong/main.cpp",
-  "output": "CMakeFiles/pong.dir/main.cpp.o"
-}
-]
