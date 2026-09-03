@@ -14,7 +14,7 @@ constexpr float SCREEN_H = 400.0f;
 constexpr float WORLD_WIDTH = 400.0f;
 constexpr float WORLD_HEIGHT = 250.0f;
 
-constexpr float BASE_BALL_SPEED = 150.0f;
+constexpr float BASE_BALL_SPEED = 350.0f;
 constexpr float BASE_BALL_RADIUS = WORLD_HEIGHT / 48;
 constexpr float BASE_BALL_X = (WORLD_WIDTH / 2);
 constexpr float BASE_BALL_Y = (WORLD_HEIGHT / 2);
@@ -34,7 +34,7 @@ constexpr float BASE_PADDLE_RIGHT_X = WORLD_WIDTH - BASE_PADDLE_LEFT_X;
 constexpr float BASE_PADDLE_RIGHT_BORDER_LEFT = BASE_PADDLE_RIGHT_X - (BASE_PADDLE_WIDTH / 2);
 constexpr float BASE_PADDLE_RIGHT_BORDER_RIGHT = BASE_PADDLE_RIGHT_X + (BASE_PADDLE_WIDTH / 2);
 
-constexpr float ANGLE = 75 * M_PI / 180;
+constexpr float ANGLE = 60 * M_PI / 180;
 
 struct Paddle {
 	float left_border, right_border;

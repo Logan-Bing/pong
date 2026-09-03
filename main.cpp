@@ -50,11 +50,21 @@ int	checkBallPaddleCollision(Ball& b, Paddle& p)
 		 );
 }
 
-void	handlePaddleBallCollision(Ball& b, Paddle& p)
+void	handlePaddleBallCollision(Ball& b, Paddle& p, int dir)
 {
 	// (min - v) / (max - min)
 	float ratio = (b.y - p.y) / (p.height / 2);
-	std::cout << ratio << std::endl;
+	float a = ANGLE * ratio;
+
+	float d = a * 180 / M_PI;
+
+	b.vx = cosf(a) * dir;
+	b.vy = sinf(a) * dir;
+
+	std::cout << "degres: " << d << std::endl;
+	std::cout << "radius: " <<  a << std::endl;
+	std::cout << "v.x: " << b.vx << std::endl;
+	std::cout << "v.y: " << b.vy << std::endl;
 }
 
 int main()
@@ -123,9 +133,13 @@ int main()
 
 		updatePaddle(p_left, dt, p_left_move_dir);
 		updatePaddle(p_right, dt, p_right_move_dir);
-	
+
+		b.x += dt * b.speed * b.vx;
+		b.y += dt * b.speed * b.vy;
+
 		if (checkBallPaddleCollision(b, p_right))
-			handlePaddleBallCollision(b, p_right);
+			handlePaddleBallCollision(b, p_right, -1);
+
 		if (b.x >= WORLD_WIDTH)
 			b.x = 0;
 
