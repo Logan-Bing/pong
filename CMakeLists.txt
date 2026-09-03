@@ -9,8 +9,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(raylib REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} 
+	main.cpp 
+	World.cpp
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 # Symlink de compile_commands.json a la racine du projet
 add_custom_target(copy_compile_commands ALL

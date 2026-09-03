@@ -1,6 +1,10 @@
-#include <iostream>
 #include "raylib.h"
+#include <iostream>
 #include "header.hpp"
+#include "World.hpp"
+
+// Créer un jeu de relfexe pour avoir un bonus
+// Colorier les bordure de l'offset en noir
 
 // Entities 
 // 	Paddle
@@ -8,62 +12,144 @@
 // 	Player
 //	Bonus
 
+
+void	DrawScreenInfo(float height, World& w, float x, float y, float dt)
+{
+	DrawText(TextFormat(
+					"SCREEN_H: %f\nWORLD_HEIGHT: %f\nDT: %f\n",
+				height, WORLD_HEIGHT * w.ratio, dt), x, y, 20, RED);
+}
+
+void	DrawPaddleInfo(Paddle& p, float x, float y)
+{
+	DrawText(TextFormat(
+				"top_border : %f\nbot_border : %f\n", 
+				p.top_border, p.bot_border), x, y, 20, RED);
+}
+
+void	updatePaddle(Paddle& p, float dt, int move_dir)
+{
+	float new_y = p.y - (dt * p.speed * move_dir);
+	if (new_y <= p.height / 2)
+		p.y = p.height / 2;
+	else if (new_y >= WORLD_HEIGHT - (p.height / 2))
+		p.y = WORLD_HEIGHT - (p.height / 2);
+	else
+		p.y = new_y;
+	p.top_border = p.y - (p.height / 2);
+	p.bot_border = p.y + (p.height / 2);
+}
+
+int	checkBallPaddleCollision(Ball& b, Paddle& p)
+{
+	return (
+			b.x + b.radius >= p.left_border &&
+			b.x + b.radius <= p.right_border &&
+			b.y >= p.top_border &&
+		 	b.y <= p.bot_border
+		 );
+}
+
+void	handlePaddleBallCollision(Ball& b, Paddle& p)
+{
+	// (min - v) / (max - min)
+	float ratio = (b.y - p.y) / (p.height / 2);
+	std::cout << ratio << std::endl;
+}
+
 int main()
 {
 	// Game init
-	Paddle p_left { BASE_PADDLE_LEFT_X, BASE_PADDLE_Y, BASE_PADDLE_WIDTH, BASE_PADDLE_HEIGHT, BASE_PADDLE_SPEED};
-	Paddle p_right {BASE_PADDLE_RIGHT_X, BASE_PADDLE_Y, BASE_PADDLE_WIDTH, BASE_PADDLE_HEIGHT, BASE_PADDLE_SPEED};
-	Ball b { BASE_BALL_X, BASE_BALL_Y, 0, 0, BASE_BALL_RADIUS};
+	World w;
+
+	Paddle p_left
+	{
+		BASE_PADDLE_LEFT_BORDER_LEFT,
+		BASE_PADDLE_LEFT_BORDER_RIGHT,
+		BASE_PADDLE_TOP_BORDER,
+		BASE_PADDLE_BOT_BORDER,
+		BASE_PADDLE_LEFT_X,
+		BASE_PADDLE_Y,
+	BASE_PADDLE_WIDTH,
+	BASE_PADDLE_HEIGHT,
+	BASE_PADDLE_SPEED,
+	};
+
+	Paddle p_right
+	{
+		BASE_PADDLE_RIGHT_BORDER_LEFT,
+		BASE_PADDLE_RIGHT_BORDER_RIGHT,
+		BASE_PADDLE_TOP_BORDER,
+		BASE_PADDLE_BOT_BORDER,
+		BASE_PADDLE_RIGHT_X,
+		BASE_PADDLE_Y,
+	BASE_PADDLE_WIDTH,
+	BASE_PADDLE_HEIGHT,
+	BASE_PADDLE_SPEED,
+	};
+
+	Ball b 
+	{
+		BASE_BALL_X,
+		BASE_BALL_Y,
+		0.5,
+		0,
+		BASE_BALL_RADIUS,
+		BASE_BALL_SPEED
+	};
 
 	// Window init
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	InitWindow(SCREEN_W, SCREEN_H, "Pong");
-    SetWindowMinSize(320, 240);
-
+    SetWindowMinSize(WORLD_WIDTH, WORLD_HEIGHT);
 	SetTargetFPS(FPS);
-
 
 	while (!WindowShouldClose())
 	{
 		float dt = GetFrameTime();
-		int currentScreenWidth = GetScreenWidth();
-		int currentScreenHeight = GetScreenHeight();
+		float currentScreenWidth = GetScreenWidth();
+		float currentScreenHeight = GetScreenHeight();
+		w.updateWorldRatio(currentScreenWidth, currentScreenHeight);
 
 		// update
-		float ratio = 0;
-		float offset_x = 0;
-		float offset_y = 0;
-		float ratio_h = currentScreenHeight / TERRAIN_HEIGHT;
-		float ratio_w = currentScreenWidth / TERRAIN_WIDTH;
-		int w_full = 0;
+		int p_left_move_dir = 0;
+		int p_right_move_dir = 0;
 
-		if (ratio_w < ratio_h)
-		{
-			ratio = ratio_w;
-			offset_y = (currentScreenHeight - TERRAIN_HEIGHT * ratio) / 2;
-			w_full = 1;
-		}
-		else
-		{
-			ratio = ratio_h;
-			offset_x = (currentScreenWidth - TERRAIN_WIDTH * ratio) / 2;
-		}
+		if (IsKeyDown(KEY_W)) p_left_move_dir = 1;
+		else if (IsKeyDown(KEY_S)) p_left_move_dir = -1;
 
+		if (IsKeyDown(KEY_UP)) p_right_move_dir = 1;
+		else if (IsKeyDown(KEY_DOWN)) p_right_move_dir = -1;
+
+		updatePaddle(p_left, dt, p_left_move_dir);
+		updatePaddle(p_right, dt, p_right_move_dir);
+	
+		if (checkBallPaddleCollision(b, p_right))
+			handlePaddleBallCollision(b, p_right);
+		if (b.x >= WORLD_WIDTH)
+			b.x = 0;
 
 		// draw
 		BeginDrawing();
 
 			ClearBackground(WHITE);
-			DrawCircle(b.x * ratio + offset_x, b.y * ratio + offset_y, b.radius * ratio, RED);
-			DrawRectangle(p_left.x * ratio + offset_x, p_left.y * ratio + offset_y, p_left.width * ratio, p_left.height * ratio, BLACK);
-			DrawRectangle(p_right.x * ratio + offset_x, p_right.y * ratio + offset_y, p_right.width * ratio, p_right.height * ratio, BLACK);
-			DrawText(TextFormat("W: %d", currentScreenWidth ), 100, 100, 20, GRAY);
-			DrawText(TextFormat("H: %d", currentScreenHeight), 100, 120, 20, GRAY);
-			DrawText(TextFormat("W FULL: %d", w_full), 100, 140, 20, GRAY);
-			DrawText(TextFormat("Ratio: %f", ratio), 100, 160, 20, GRAY);
+
+			// Draw Border
+			DrawRectangle(0, 0, currentScreenWidth, w.offset_y, GRAY);
+			DrawRectangle(0, w.offset_y + w.scaleRatio(WORLD_HEIGHT), currentScreenWidth, w.offset_y , GRAY);
+			DrawRectangle(0, 0, w.offset_x, currentScreenHeight, GRAY);
+			DrawRectangle(w.offset_x + w.scaleRatio(WORLD_WIDTH), 0, w.offset_x, currentScreenHeight, GRAY);
+
+			// Draw element
+			DrawCircle(w.scaleX(b.x), w.scaleY(b.y), w.scaleRatio(b.radius), RED);
+			DrawRectangle(w.scaleX(p_left.x - (p_left.width / 2)), w.scaleY((p_left.y - p_left.height / 2)), w.scaleRatio(p_left.width), w.scaleRatio(p_left.height), BLACK);
+			DrawRectangle(w.scaleX(p_right.x - (p_right.width / 2)), w.scaleY((p_right.y - p_right.height / 2)), w.scaleRatio(p_right.width), w.scaleRatio(p_right.height), BLACK);
+
+			// Debug
+			DrawPaddleInfo(p_right, 20, 20);
+			DrawScreenInfo(currentScreenHeight, w, 40, 80, dt);
 
 		EndDrawing();
 	}
-
 	CloseWindow();
 }
