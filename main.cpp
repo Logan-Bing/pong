@@ -40,14 +40,12 @@ void	updatePaddle(Paddle& p, float dt, int move_dir)
 	p.bot_border = p.y + (p.height / 2);
 }
 
-int	checkBallPaddleCollision(Ball& b, Paddle& p)
+void	setBallService(Ball& b, int dir)
 {
-	return (
-			b.x + b.radius >= p.left_border &&
-			b.x + b.radius <= p.right_border &&
-			b.y >= p.top_border &&
-		 	b.y <= p.bot_border
-		 );
+	b.x = BASE_BALL_X;
+	b.y = BASE_BALL_Y;
+	b.vx = dir;
+	b.vy = 0;
 }
 
 void	handlePaddleBallCollision(Ball& b, Paddle& p, int dir)
@@ -56,15 +54,9 @@ void	handlePaddleBallCollision(Ball& b, Paddle& p, int dir)
 	float ratio = (b.y - p.y) / (p.height / 2);
 	float a = ANGLE * ratio;
 
-	float d = a * 180 / M_PI;
-
+	// float d = a * 180 / M_PI;
 	b.vx = cosf(a) * dir;
 	b.vy = sinf(a) * dir;
-
-	std::cout << "degres: " << d << std::endl;
-	std::cout << "radius: " <<  a << std::endl;
-	std::cout << "v.x: " << b.vx << std::endl;
-	std::cout << "v.y: " << b.vy << std::endl;
 }
 
 int main()
@@ -113,6 +105,8 @@ int main()
 	InitWindow(SCREEN_W, SCREEN_H, "Pong");
     SetWindowMinSize(WORLD_WIDTH, WORLD_HEIGHT);
 	SetTargetFPS(FPS);
+	int serve_count = 1;
+	int serve_dir = 1;
 
 	while (!WindowShouldClose())
 	{
@@ -139,9 +133,22 @@ int main()
 
 		if (checkBallPaddleCollision(b, p_right))
 			handlePaddleBallCollision(b, p_right, -1);
+		if (checkBallPaddleCollision(b, p_left))
+			handlePaddleBallCollision(b, p_left, 1);
 
-		if (b.x >= WORLD_WIDTH)
-			b.x = 0;
+		if (b.y <= 0 || b.y >= WORLD_HEIGHT)
+			b.vy = -b.vy;
+
+		if (b.x <= 0 || b.x >= WORLD_WIDTH)
+		{
+			if (serve_count >= 2)
+			{
+				serve_dir = -serve_dir;
+				serve_count = 0;
+			}
+			setBallService(b, serve_dir);
+			serve_count++;
+		}
 
 		// draw
 		BeginDrawing();
@@ -160,8 +167,8 @@ int main()
 			DrawRectangle(w.scaleX(p_right.x - (p_right.width / 2)), w.scaleY((p_right.y - p_right.height / 2)), w.scaleRatio(p_right.width), w.scaleRatio(p_right.height), BLACK);
 
 			// Debug
-			DrawPaddleInfo(p_right, 20, 20);
-			DrawScreenInfo(currentScreenHeight, w, 40, 80, dt);
+			// DrawPaddleInfo(p_right, 20, 20);
+			// DrawScreenInfo(currentScreenHeight, w, 40, 80, dt);
 
 		EndDrawing();
 	}

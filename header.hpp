@@ -52,4 +52,5 @@ struct Ball {
 	float speed;
 };
 
+int	checkBallPaddleCollision(Ball& b, Paddle& p);
 #endif
