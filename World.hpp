@@ -1,7 +1,8 @@
 #ifndef __WORLD_HPP__
 #define __WORLD_HPP__
 
-#include "header.hpp"
+constexpr float WORLD_WIDTH = 400.0f;
+constexpr float WORLD_HEIGHT = 250.0f;
 
 class World
 {

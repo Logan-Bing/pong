@@ -1,7 +1,5 @@
-#include "raylib.h"
-#include <iostream>
+#include "Element.hpp"
 #include "header.hpp"
-#include "World.hpp"
 
 // Créer un jeu de relfexe pour avoir un bonus
 // Colorier les bordure de l'offset en noir
@@ -12,30 +10,11 @@
 // 	Player
 //	Bonus
 
-
-void	DrawScreenInfo(float height, World& w, float x, float y, float dt)
-{
-	DrawText(TextFormat(
-					"SCREEN_H: %f\nWORLD_HEIGHT: %f\nDT: %f\n",
-				height, WORLD_HEIGHT * w.ratio, dt), x, y, 20, RED);
-}
-
-void	DrawPaddleInfo(Paddle& p, float x, float y)
-{
-	DrawText(TextFormat(
-				"top_border : %f\nbot_border : %f\n", 
-				p.top_border, p.bot_border), x, y, 20, RED);
-}
-
 void	updatePaddle(Paddle& p, float dt, int move_dir)
 {
 	float new_y = p.y - (dt * p.speed * move_dir);
-	if (new_y <= p.height / 2)
-		p.y = p.height / 2;
-	else if (new_y >= WORLD_HEIGHT - (p.height / 2))
-		p.y = WORLD_HEIGHT - (p.height / 2);
-	else
-		p.y = new_y;
+	
+	p.y = std::clamp(new_y, p.height / 2, WORLD_HEIGHT - (p.height / 2));
 	p.top_border = p.y - (p.height / 2);
 	p.bot_border = p.y + (p.height / 2);
 }
@@ -59,46 +38,28 @@ void	handlePaddleBallCollision(Ball& b, Paddle& p, int dir)
 	b.vy = sinf(a) * dir;
 }
 
+std::string  formatOverlayText(float dt, Paddle& pl, Paddle& pr)
+{
+	std::string format;
+
+	format
+		+= "FPS : "   + std::to_string(GetFPS()) + "\n" 
+		+ "DT : "     + std::to_string(dt) + "\n"
+		+ "PL_TOP : " + std::to_string(pl.top_border) + "\n"
+		+ "PL_BOT : " + std::to_string(pl.bot_border) + "\n"
+		+ "PR_TOP : " + std::to_string(pr.top_border) + "\n"
+		+ "PR_BOT : " + std::to_string(pr.bot_border);;
+
+	return format;
+}
+
 int main()
 {
 	// Game init
+	Game GAME;
 	World w;
 
-	Paddle p_left
-	{
-		BASE_PADDLE_LEFT_BORDER_LEFT,
-		BASE_PADDLE_LEFT_BORDER_RIGHT,
-		BASE_PADDLE_TOP_BORDER,
-		BASE_PADDLE_BOT_BORDER,
-		BASE_PADDLE_LEFT_X,
-		BASE_PADDLE_Y,
-	BASE_PADDLE_WIDTH,
-	BASE_PADDLE_HEIGHT,
-	BASE_PADDLE_SPEED,
-	};
-
-	Paddle p_right
-	{
-		BASE_PADDLE_RIGHT_BORDER_LEFT,
-		BASE_PADDLE_RIGHT_BORDER_RIGHT,
-		BASE_PADDLE_TOP_BORDER,
-		BASE_PADDLE_BOT_BORDER,
-		BASE_PADDLE_RIGHT_X,
-		BASE_PADDLE_Y,
-	BASE_PADDLE_WIDTH,
-	BASE_PADDLE_HEIGHT,
-	BASE_PADDLE_SPEED,
-	};
-
-	Ball b 
-	{
-		BASE_BALL_X,
-		BASE_BALL_Y,
-		0.5,
-		0,
-		BASE_BALL_RADIUS,
-		BASE_BALL_SPEED
-	};
+	GAME.InitGameElement();
 
 	// Window init
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
@@ -110,7 +71,7 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		float dt = GetFrameTime();
+		GAME.dt = GetFrameTime();
 		float currentScreenWidth = GetScreenWidth();
 		float currentScreenHeight = GetScreenHeight();
 		w.updateWorldRatio(currentScreenWidth, currentScreenHeight);
@@ -125,28 +86,28 @@ int main()
 		if (IsKeyDown(KEY_UP)) p_right_move_dir = 1;
 		else if (IsKeyDown(KEY_DOWN)) p_right_move_dir = -1;
 
-		updatePaddle(p_left, dt, p_left_move_dir);
-		updatePaddle(p_right, dt, p_right_move_dir);
+		updatePaddle(GAME.left_paddle, GAME.dt, p_left_move_dir);
+		updatePaddle(GAME.right_paddle, GAME.dt, p_right_move_dir);
 
-		b.x += dt * b.speed * b.vx;
-		b.y += dt * b.speed * b.vy;
+		GAME.ball.x += GAME.dt * GAME.ball.speed * GAME.ball.vx;
+		GAME.ball.y += GAME.dt * GAME.ball.speed * GAME.ball.vy;
 
-		if (checkBallPaddleCollision(b, p_right))
-			handlePaddleBallCollision(b, p_right, -1);
-		if (checkBallPaddleCollision(b, p_left))
-			handlePaddleBallCollision(b, p_left, 1);
+		if (checkBallPaddleCollision(GAME.ball, GAME.right_paddle))
+			handlePaddleBallCollision(GAME.ball, GAME.right_paddle, -1);
+		if (checkBallPaddleCollision(GAME.ball, GAME.left_paddle))
+			handlePaddleBallCollision(GAME.ball, GAME.left_paddle, 1);
 
-		if (b.y <= 0 || b.y >= WORLD_HEIGHT)
-			b.vy = -b.vy;
+		if (GAME.ball.y <= 0 || GAME.ball.y >= WORLD_HEIGHT)
+			GAME.ball.vy = -GAME.ball.vy;
 
-		if (b.x <= 0 || b.x >= WORLD_WIDTH)
+		if (GAME.ball.x <= 0 || GAME.ball.x >= WORLD_WIDTH)
 		{
 			if (serve_count >= 2)
 			{
 				serve_dir = -serve_dir;
 				serve_count = 0;
 			}
-			setBallService(b, serve_dir);
+			setBallService(GAME.ball, serve_dir);
 			serve_count++;
 		}
 
@@ -162,13 +123,17 @@ int main()
 			DrawRectangle(w.offset_x + w.scaleRatio(WORLD_WIDTH), 0, w.offset_x, currentScreenHeight, GRAY);
 
 			// Draw element
-			DrawCircle(w.scaleX(b.x), w.scaleY(b.y), w.scaleRatio(b.radius), RED);
-			DrawRectangle(w.scaleX(p_left.x - (p_left.width / 2)), w.scaleY((p_left.y - p_left.height / 2)), w.scaleRatio(p_left.width), w.scaleRatio(p_left.height), BLACK);
-			DrawRectangle(w.scaleX(p_right.x - (p_right.width / 2)), w.scaleY((p_right.y - p_right.height / 2)), w.scaleRatio(p_right.width), w.scaleRatio(p_right.height), BLACK);
+			DrawCircle(w.scaleX(GAME.ball.x), w.scaleY(GAME.ball.y), w.scaleRatio(GAME.ball.radius), RED);
+			DrawRectangle(w.scaleX(GAME.left_paddle.x - (GAME.left_paddle.width / 2)), w.scaleY((GAME.left_paddle.y - GAME.left_paddle.height / 2)), w.scaleRatio(GAME.left_paddle.width), w.scaleRatio(GAME.left_paddle.height), BLACK);
+			DrawRectangle(w.scaleX(GAME.right_paddle.x - (GAME.right_paddle.width / 2)), w.scaleY((GAME.right_paddle.y - GAME.right_paddle.height / 2)), w.scaleRatio(GAME.right_paddle.width), w.scaleRatio(GAME.right_paddle.height), BLACK);
 
-			// Debug
-			// DrawPaddleInfo(p_right, 20, 20);
-			// DrawScreenInfo(currentScreenHeight, w, 40, 80, dt);
+			// OVERLAY
+			Vector2 v {0, 0};
+			if (IsKeyDown(KEY_TAB))
+			{
+				DrawRectangle(0, 0, MeasureText(formatOverlayText(GAME.dt, GAME.left_paddle, GAME.right_paddle).c_str(), 16), 150, Fade(BLACK, 0.8f));
+				DrawTextEx(LoadFont("./Montserrat-Medium.ttf"), formatOverlayText(GAME.dt, GAME.left_paddle, GAME.right_paddle).c_str(), v, 16, 1, WHITE);
+			}
 
 		EndDrawing();
 	}

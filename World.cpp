@@ -1,6 +1,5 @@
 #include "World.hpp"
 
-
 World::World(): ratio(0), offset_x(0), offset_y(0){}
 
 void	World::updateWorldRatio(float width, float height)

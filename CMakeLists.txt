@@ -11,6 +11,7 @@ find_package(raylib REQUIRED)
 
 add_executable(${PROJECT_NAME} 
 	main.cpp 
+	Game.cpp
 	World.cpp
 	Collision.cpp
 )
