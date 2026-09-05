@@ -1,5 +1,9 @@
 #include "Element.hpp"
+#include "Game.hpp"
+#include "Render.hpp"
+#include "ViewPort.hpp"
 #include "header.hpp"
+#include <raylib.h>
 
 // Créer un jeu de relfexe pour avoir un bonus
 // Colorier les bordure de l'offset en noir
@@ -56,25 +60,24 @@ std::string  formatOverlayText(float dt, Paddle& pl, Paddle& pr)
 int main()
 {
 	// Game init
-	Game GAME;
-	World w;
-
-	GAME.InitGameElement();
+	Game Game;
+	ViewPort view;
 
 	// Window init
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	InitWindow(SCREEN_W, SCREEN_H, "Pong");
     SetWindowMinSize(WORLD_WIDTH, WORLD_HEIGHT);
 	SetTargetFPS(FPS);
+	Font font = LoadFont("./Montserrat-Medium.ttf");
 	int serve_count = 1;
 	int serve_dir = 1;
 
 	while (!WindowShouldClose())
 	{
-		GAME.dt = GetFrameTime();
-		float currentScreenWidth = GetScreenWidth();
-		float currentScreenHeight = GetScreenHeight();
-		w.updateWorldRatio(currentScreenWidth, currentScreenHeight);
+		Game.dt = GetFrameTime();
+		view.screenW = GetScreenWidth();
+		view.screenH = GetScreenHeight();
+		view.UpdateRatioWorldScreen();
 
 		// update
 		int p_left_move_dir = 0;
@@ -86,28 +89,28 @@ int main()
 		if (IsKeyDown(KEY_UP)) p_right_move_dir = 1;
 		else if (IsKeyDown(KEY_DOWN)) p_right_move_dir = -1;
 
-		updatePaddle(GAME.left_paddle, GAME.dt, p_left_move_dir);
-		updatePaddle(GAME.right_paddle, GAME.dt, p_right_move_dir);
+		updatePaddle(Game.left_paddle, Game.dt, p_left_move_dir);
+		updatePaddle(Game.right_paddle, Game.dt, p_right_move_dir);
 
-		GAME.ball.x += GAME.dt * GAME.ball.speed * GAME.ball.vx;
-		GAME.ball.y += GAME.dt * GAME.ball.speed * GAME.ball.vy;
+		Game.ball.x += Game.dt * Game.ball.speed * Game.ball.vx;
+		Game.ball.y += Game.dt * Game.ball.speed * Game.ball.vy;
 
-		if (checkBallPaddleCollision(GAME.ball, GAME.right_paddle))
-			handlePaddleBallCollision(GAME.ball, GAME.right_paddle, -1);
-		if (checkBallPaddleCollision(GAME.ball, GAME.left_paddle))
-			handlePaddleBallCollision(GAME.ball, GAME.left_paddle, 1);
+		if (checkBallPaddleCollision(Game.ball, Game.right_paddle))
+			handlePaddleBallCollision(Game.ball, Game.right_paddle, -1);
+		if (checkBallPaddleCollision(Game.ball, Game.left_paddle))
+			handlePaddleBallCollision(Game.ball, Game.left_paddle, 1);
 
-		if (GAME.ball.y <= 0 || GAME.ball.y >= WORLD_HEIGHT)
-			GAME.ball.vy = -GAME.ball.vy;
+		if (Game.ball.y <= 0 || Game.ball.y >= WORLD_HEIGHT)
+			Game.ball.vy = -Game.ball.vy;
 
-		if (GAME.ball.x <= 0 || GAME.ball.x >= WORLD_WIDTH)
+		if (Game.ball.x <= 0 || Game.ball.x >= WORLD_WIDTH)
 		{
 			if (serve_count >= 2)
 			{
 				serve_dir = -serve_dir;
 				serve_count = 0;
 			}
-			setBallService(GAME.ball, serve_dir);
+			setBallService(Game.ball, serve_dir);
 			serve_count++;
 		}
 
@@ -117,25 +120,23 @@ int main()
 			ClearBackground(WHITE);
 
 			// Draw Border
-			DrawRectangle(0, 0, currentScreenWidth, w.offset_y, GRAY);
-			DrawRectangle(0, w.offset_y + w.scaleRatio(WORLD_HEIGHT), currentScreenWidth, w.offset_y , GRAY);
-			DrawRectangle(0, 0, w.offset_x, currentScreenHeight, GRAY);
-			DrawRectangle(w.offset_x + w.scaleRatio(WORLD_WIDTH), 0, w.offset_x, currentScreenHeight, GRAY);
+			Render::DrawBorder(view);
 
 			// Draw element
-			DrawCircle(w.scaleX(GAME.ball.x), w.scaleY(GAME.ball.y), w.scaleRatio(GAME.ball.radius), RED);
-			DrawRectangle(w.scaleX(GAME.left_paddle.x - (GAME.left_paddle.width / 2)), w.scaleY((GAME.left_paddle.y - GAME.left_paddle.height / 2)), w.scaleRatio(GAME.left_paddle.width), w.scaleRatio(GAME.left_paddle.height), BLACK);
-			DrawRectangle(w.scaleX(GAME.right_paddle.x - (GAME.right_paddle.width / 2)), w.scaleY((GAME.right_paddle.y - GAME.right_paddle.height / 2)), w.scaleRatio(GAME.right_paddle.width), w.scaleRatio(GAME.right_paddle.height), BLACK);
-
+			Render::DrawBall(view, Game);
+			Render::DrawPaddle(view, Game.left_paddle);
+			Render::DrawPaddle(view, Game.right_paddle);
 			// OVERLAY
 			Vector2 v {0, 0};
 			if (IsKeyDown(KEY_TAB))
 			{
-				DrawRectangle(0, 0, MeasureText(formatOverlayText(GAME.dt, GAME.left_paddle, GAME.right_paddle).c_str(), 16), 150, Fade(BLACK, 0.8f));
-				DrawTextEx(LoadFont("./Montserrat-Medium.ttf"), formatOverlayText(GAME.dt, GAME.left_paddle, GAME.right_paddle).c_str(), v, 16, 1, WHITE);
+				// MeasureTextEx(font, formatOverlayText(Game.dt, ,), float fontSize, float spacing)
+				DrawRectangle(0, 0, MeasureText(formatOverlayText(Game.dt, Game.left_paddle, Game.right_paddle).c_str(), 16), 150, Fade(BLACK, 0.8f));
+				DrawTextEx(font, formatOverlayText(Game.dt, Game.left_paddle, Game.right_paddle).c_str(), v, 16, 1, WHITE);
 			}
 
 		EndDrawing();
 	}
 	CloseWindow();
+	UnloadFont(font);
 }

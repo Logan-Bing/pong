@@ -3,13 +3,9 @@
 
 #include <math.h>
 #include "raylib.h"
-#include "World.hpp"
+#include "ViewPort.hpp"
 
 // (X, Y) défini le centre d'un objet
-
-constexpr float FPS = 60;
-constexpr float SCREEN_W = 800.0f;
-constexpr float SCREEN_H = 400.0f;
 
 constexpr float BASE_BALL_SPEED = 350.0f;
 constexpr float BASE_BALL_RADIUS = WORLD_HEIGHT / 48;

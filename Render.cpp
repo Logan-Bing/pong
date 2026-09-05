@@ -1,13 +1,40 @@
 #include "Render.hpp"
-#include "World.hpp"
+#include "Game.hpp"
+#include "ViewPort.hpp"
+#include <raylib.h>
 
-void	Render::DrawBorder(float width, float height, float borderXsize, float borderYsize)
+constexpr int	INT(float v)
 {
-	float world_width_scaled = WORLD_WIDTH * 
+	return static_cast<int>(v);
+}
 
+void	Render::DrawBorder(ViewPort& view)
+{
+	DrawRectangle(0, 0, INT(view.screenW), INT(view.offsetY), GRAY);
+	DrawRectangle(0,INT(view.offsetY + WORLD_HEIGHT * view.ratio), INT(view.screenW), INT(view.offsetY), GRAY);
+	DrawRectangle(0, 0,INT(view.offsetX), INT(view.screenH), GRAY);
+	DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
+}
 
-	DrawRectangle(0, 0, width, borderYsize, GRAY);
-	DrawRectangle(0, borderYsize + w.scaleRatio(WORLD_HEIGHT), width, borderYsize, GRAY);
-	DrawRectangle(0, 0, borderXsize, height, GRAY);
-	DrawRectangle(borderXsize + w.scaleRatio(WORLD_WIDTH), 0, borderXsize, height, GRAY);
+void	Render::DrawBall(ViewPort& view, Game& game)
+{
+	DrawCircle
+		(
+			INT(view.scaleXElement(game.ball.x)),
+			INT(view.scaleYElement(game.ball.y)),
+			view.scaleView(game.ball.radius),
+			RED
+		);
+}
+
+void	Render::DrawPaddle(ViewPort& view, Paddle& paddle)
+{
+	DrawRectangle
+		(
+			INT(view.scaleXElement(paddle.x) - (paddle.width / 2)), 
+			INT(view.scaleYElement(paddle.y - paddle.height / 2)), 
+			INT(view.scaleView(paddle.width)),
+			INT(view.scaleView(paddle.height)),
+			BLACK
+		);
 }

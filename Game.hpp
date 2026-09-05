@@ -11,7 +11,7 @@ class Game
 	  Ball		ball;
 	  float		dt;
 
-	  void InitGameElement();
+	  Game();
 };
 
 #endif

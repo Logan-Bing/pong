@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(pong CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Genere compile_commands.json pour clangd (nvim)
@@ -12,11 +12,12 @@ find_package(raylib REQUIRED)
 add_executable(${PROJECT_NAME} 
 	main.cpp 
 	Game.cpp
-	World.cpp
+	Render.cpp
 	Collision.cpp
+	ViewPort.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wconversion)
 
 # Symlink de compile_commands.json a la racine du projet
 add_custom_target(copy_compile_commands ALL

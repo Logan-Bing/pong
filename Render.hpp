@@ -2,12 +2,19 @@
 #define __RENDER_HPP__
 
 #include "raylib.h"
-#include "World.hpp"
+#include "ViewPort.hpp"
+#include "Game.hpp"
 
-class Render
+namespace Render
 {
-	public:
-	  static void DrawBorder();
+	  /*
+	   * @brief Draw the border of the world side that's not fully the screen side
+	   */
+	  void	DrawBorder(ViewPort& view);
+
+	  void	DrawBall(ViewPort& view, Game& game);
+	  void	DrawPaddle(ViewPort& view, Paddle& paddle);
 };
+
 
 #endif
