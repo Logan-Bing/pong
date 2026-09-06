@@ -13,8 +13,9 @@ add_executable(${PROJECT_NAME}
 	main.cpp 
 	Game.cpp
 	Render.cpp
-	Collision.cpp
+	Simulation.cpp
 	ViewPort.cpp
+	Timer.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wconversion)

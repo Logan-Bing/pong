@@ -1,9 +1,19 @@
+#include <vector>
+#include <iostream>
 
-void test()
+
+int main()
 {
+	std::vector<float> dts =
+	{
+		1.0f/30, 
+		1.0f/60, 
+		1.0f/140, 
+		1.0f/240
+	};
 
-	// Test colision
-	b.x = p_right.left_border - b.radius; // milieu de la raquette
-	b.y = p_right.top_border; // en haut
-	b.y = p_right.bot_border; // en bas
+	for (auto iter = dts.begin(); iter != dts.end(); iter++)
+	{
+		std::cout << *iter << std::endl;
+	}
 }

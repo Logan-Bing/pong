@@ -141,14 +141,64 @@ Rappelle-moi ces règles quand elles s'appliquent, sans que je le demande :
 - **Mouvement puis contrainte**, deux étapes distinctes. Jamais un test de légalité avant déplacement.
 - Le fixed timestep arrive au **jalon 5**, volontairement après. La logique de mouvement doit rester
   isolée pour que la migration soit indolore.
+- **Une valeur, un seul domicile.** Une borne, une position dérivée, un ratio : écrits à un seul
+  endroit. Deux copies de la même grandeur finissent toujours par diverger — constaté trois fois
+  (bornes dupliquées dans le clamp, `Render::RATIO` doublant `ViewPort`, `top_border` en trois
+  exemplaires). Symptôme à surveiller : la même expression apparaît deux fois dans le fichier.
+- **Deux touches opposées enfoncées : priorité fixe, la direction « haut » gagne** (W à gauche,
+  UP à droite). Décision assumée, pas un effet de bord de l'ordre des `if`.
+- **`Game` contient tout l'état de partie, et rien d'autre.** Critère de tri : si je sauvegardais la
+  partie sur disque et la rechargeais, est-ce que `Game` suffirait ? `dt`, l'accumulateur du fixed
+  timestep et la police de caractères n'en font pas partie : ils appartiennent à la boucle ou au rendu.
+- **Le debug lit, il ne calcule rien et ne stocke rien.** Aucune valeur n'entre dans une entité pour
+  être affichée. Le jour où supprimer l'overlay change le comportement du jeu, c'est perdu.
+- **`ViewPort` décrit la projection monde→écran, pas le monde.** L'overlay se dessine en pixels bruts —
+  il n'est pas *dans* le monde, il n'a donc aucune unité monde à convertir. Tout le reste passe par
+  `scaleX` / `scaleY`.
+- **Ressource graphique = durée de vie strictement incluse dans `InitWindow` … `CloseWindow`.**
+  Chargée une fois avant la boucle, libérée après. Jamais dans la boucle de rendu, jamais en global.
 
 ---
 
 ## État courant
 
-Jalon 2, non validé. Reste à vérifier : remise à zéro de l'intention en début de tour,
-clamp inconditionnel, division entière sur les demi-hauteurs, cas des deux touches simultanées,
-et sortie de l'intention hors de la structure `Paddle`.
+**Jalon 2, non validé.** Le code est en place ; la mesure n'a pas été faite. C'est la seule chose
+qui bloque le passage au jalon 3.
+
+Mesures restantes :
+
+1. Traversée verticale complète d'une raquette, chronométrée à 30, 60 et 240 fps — les trois durées
+   doivent coïncider. Demande un chronomètre, pas une valeur instantanée : l'overlay seul ne suffit pas.
+2. Bord haut atteint exactement (`PL_TOP` à `0.000000`), sans dépassement ni marge résiduelle.
+3. Les quatre touches enfoncées ensemble : les deux raquettes bougent simultanément.
+
+Points de la liste précédente, tous réglés : remise à zéro de l'intention en début de tour, clamp
+inconditionnel (`std::clamp`), division flottante sur les demi-hauteurs, intention sortie de `Paddle`,
+cas des deux touches simultanées tranché.
+
+Outillage construit depuis : overlay de debug (maintenu par TAB), classe `Game`, `ViewPort`, namespace
+`Render`. Né d'un vrai blocage — impossible de suivre les valeurs à l'œil — donc justifié ; mais le
+refactor s'est arrêté à mi-chemin, d'où la dette ci-dessous.
+
+Dette ouverte, à traiter avant le jalon 4 :
+
+- `top_border` / `bot_border` ont trois domiciles : stockés dans `Paddle`, recalculés dans
+  `updatePaddle`, re-dérivés à la main au rendu — pendant que `Collision.cpp` lit le champ.
+  Violation directe de « une valeur, un seul domicile ». Signalé trois fois.
+- `serve_count` et `serve_dir` sont encore des variables locales de `main` alors qu'ils sont de
+  l'état de partie. Violation de « `Game` contient tout l'état de partie ».
+- Les fonctions de `Render` prennent `Game&` et `Paddle&` non-`const` : rien n'empêche le rendu de
+  modifier l'état.
+- `Element.hpp` mélange constantes de fenêtre, constantes de gameplay, structures et prototype de
+  collision. `header.hpp` est devenu un en-tête parapluie : les dépendances réelles de chaque `.cpp`
+  ne sont plus lisibles.
+- Avertissements de conversion restants : `SCREEN_W`, `WORLD_WIDTH`, `FPS` déclarés en `float` puis
+  passés à des API raylib qui attendent des `int` ; `ANGLE` calculé en `double` puis tronqué.
+
+Question ouverte, à trancher **au jalon 5 et pas avant** : où vit la séquence d'un pas de simulation,
+aujourd'hui étalée dans le corps de la boucle de `main` et sans nom. Critère de décision : une fonction
+qui ne touche à aucun membre de `Game` n'a rien à faire dans `Game` ; déplacer du code dans une classe
+n'est pas une amélioration en soi.
 
 *(Section à mettre à jour à chaque validation de jalon.)*
 

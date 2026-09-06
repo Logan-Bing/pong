@@ -15,7 +15,7 @@ constexpr float BASE_BALL_Y = (WORLD_HEIGHT / 2);
 constexpr float BASE_PADDLE_SPEED = 300.0f;
 constexpr float BASE_PADDLE_HEIGHT = WORLD_HEIGHT / 5;
 constexpr float BASE_PADDLE_WIDTH = WORLD_HEIGHT / 24;
-constexpr float BASE_PADDLE_Y = (WORLD_HEIGHT / 2);
+constexpr float BASE_PADDLE_Y = WORLD_HEIGHT / 2;
 constexpr float BASE_PADDLE_TOP_BORDER = BASE_PADDLE_Y - (BASE_PADDLE_HEIGHT / 2);
 constexpr float BASE_PADDLE_BOT_BORDER = BASE_PADDLE_Y + (BASE_PADDLE_HEIGHT / 2);
 

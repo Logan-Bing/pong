@@ -1,7 +1,7 @@
 #ifndef __VIEWPORT_HPP__
 #define __VIEWPORT_HPP__
 
-constexpr float FPS = 60;
+constexpr int FPS = 60;
 constexpr float SCREEN_W = 800.0f;
 constexpr float SCREEN_H = 400.0f;
 

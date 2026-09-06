@@ -8,5 +8,7 @@
 #include "Element.hpp"
 #include "ViewPort.hpp"
 #include "Game.hpp"
+#include "Render.hpp"
+#include "Simulation.hpp"
 
 #endif

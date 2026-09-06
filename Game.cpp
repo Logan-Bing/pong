@@ -1,9 +1,8 @@
 #include "Game.hpp"
 
-Game::Game()
-{
-	left_paddle =
-	{
+Game::Game():
+	left_paddle
+	({
 		.left_border = 	BASE_PADDLE_LEFT_BORDER_LEFT,
 		.right_border = BASE_PADDLE_LEFT_BORDER_RIGHT,
 		.top_border =	BASE_PADDLE_TOP_BORDER,
@@ -13,10 +12,9 @@ Game::Game()
 		.width =		BASE_PADDLE_WIDTH,
 		.height =	BASE_PADDLE_HEIGHT,
 		.speed	=	BASE_PADDLE_SPEED,
-	};
-
-	right_paddle = 
-	{
+	}),
+	right_paddle
+	({
 		.left_border = 	BASE_PADDLE_RIGHT_BORDER_LEFT,
 		.right_border = BASE_PADDLE_RIGHT_BORDER_RIGHT,
 		.top_border =	BASE_PADDLE_TOP_BORDER,
@@ -26,15 +24,24 @@ Game::Game()
 		.width =		BASE_PADDLE_WIDTH,
 		.height =	BASE_PADDLE_HEIGHT,
 		.speed	=	BASE_PADDLE_SPEED,
-	};
-
-	ball = 
-	{
+	}),
+	ball
+	({
 		.x =		BASE_BALL_X,
 		.y = 		BASE_BALL_Y,
 		.vx =		0.5,
 		.vy =		0,
 		.radius =	BASE_BALL_RADIUS,
 		.speed =	BASE_BALL_SPEED
-	};
+	}),
+	serve_dir(1.0f),
+	serve_count(1)
+{}
+
+void	Game::setBallService()
+{
+	ball.x = BASE_BALL_X;
+	ball.y = BASE_BALL_Y;
+	ball.vx = serve_dir;
+	ball.vy = 0;
 }
