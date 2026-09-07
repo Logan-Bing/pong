@@ -176,16 +176,24 @@ Rappelle-moi ces règles quand elles s'appliquent, sans que je le demande :
 
 ## État courant
 
-**Jalons 1 et 2 validés le 2026-09-07.**
+**Jalon 2 validé le 2026-09-07.** (Jalon 1 validé antérieurement, dans le jeu réel — non redaté.)
 
-Ce qui a été mesuré, et comment :
+Ce qui a été vérifié pour le jalon 2 :
 
-- Durée d'une traversée verticale de raquette, identique à quatre pas de simulation (1/30, 1/60,
-  1/120, 1/240 s) : **0.6667 s** dans les quatre cas — vérification indépendante, 200 unités ÷ 300 u/s.
-  Mesuré par la cible `tests`, sans fenêtre, en comptant les pas (`durée = nb_pas × dt`) et non avec
-  une horloge réelle. Tolérance retenue : un pas, soit 33 ms au pire.
-- Bornes atteintes exactement : la boucle de mesure sort sur `bot_border == WORLD_HEIGHT`.
+- Les raquettes ne sortent pas et atteignent les bords **exactement** : la boucle de mesure sort sur
+  `bot_border == WORLD_HEIGHT`, donc la borne est touchée à la valeur près.
 - Mouvement simultané des deux raquettes : vérifié à la main dans le jeu.
+
+**Ce que la cible `tests` prouve — et ce qu'elle ne prouve pas.** Elle vérifie que le déplacement
+d'une raquette est proportionnel à `dt` : 0.6667 s de temps simulé pour quatre pas différents
+(1/30, 1/60, 1/120, 1/240), soit 200 unités ÷ 300 u/s. C'est un **test de non-régression permanent**
+sur la formule de déplacement, pas la validation d'un jalon. À vitesse constante, `nb_pas × dt` est
+invariant par arithmétique : le test ne peut échouer que si `dt` disparaissait de la formule
+(`y += speed`). Il ne dit rien d'un `dt` variable ou irrégulier, et le fixed timestep du jalon 5
+n'existe pas encore — il n'y a rien à mesurer de ce côté.
+
+Acquis réutilisable : une cible qui compile et tourne **sans raylib et sans fenêtre**, avec un `dt`
+choisi. C'est l'infrastructure dont le jalon 5 aura besoin ; elle est déjà là.
 
 **Jalon 3 ouvert** (balle + rebonds murs). Attention : `Simulation.cpp` contient déjà
 `HandleCellingFloorCollision` et `HandleBallWallCollision`, écrits avant l'ouverture du jalon et

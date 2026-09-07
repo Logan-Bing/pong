@@ -1,5 +1,6 @@
 #include "Simulation.hpp"
 #include "header.hpp"
+#include <raylib.h>
 
 // Créer un jeu de relfexe pour avoir un bonus
 // Colorier les bordure de l'offset en noir
@@ -42,9 +43,7 @@ int main()
 
 		UpdatePaddle(game.left_paddle, dt, p_left_move_dir);
 		UpdatePaddle(game.right_paddle, dt, p_right_move_dir);
-
-		game.ball.x += dt * game.ball.speed * game.ball.vx;
-		game.ball.y += dt * game.ball.speed * game.ball.vy;
+		UpdateBall(game.ball, dt);
 
 		HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
 		HandleBallPaddleCollision(game.ball, game.left_paddle, 1);

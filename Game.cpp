@@ -27,9 +27,13 @@ Game::Game():
 	}),
 	ball
 	({
+		.left_border = BASE_BALL_LEFT_BORDER,
+		.right_border = BASE_BALL_RIGHT_BORDER,
+		.top_border = BASE_BALL_TOP_BORDER,
+		.bot_border = BASE_BALL_BOT_BORDER,
 		.x =		BASE_BALL_X,
 		.y = 		BASE_BALL_Y,
-		.vx =		0.5,
+		.vx =		1,
 		.vy =		0,
 		.radius =	BASE_BALL_RADIUS,
 		.speed =	BASE_BALL_SPEED

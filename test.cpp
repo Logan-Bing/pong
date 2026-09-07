@@ -17,7 +17,7 @@ int	CompFloat(float a, float b, float diff)
 	return fabs(a - b) < diff;
 }
 
-int	ElapsedTimeTest()
+int	TestElapsedTime()
 {
 	int ret = 1;
 
@@ -77,7 +77,12 @@ int	ElapsedTimeTest()
 	return (ret);
 }
 
+int	TestFloorCellingCollision()
+{
+	int ret = 1;
+}
+
 int main()
 {
-	return ElapsedTimeTest();
+	Ball b;
 }

@@ -3,7 +3,7 @@
 int	CheckBallPaddleCollision(Ball& ball, Paddle& paddle)
 {
 	// Pour savoir c'est quelle raquette
-	float ball_border_pos = paddle.x > (WORLD_WIDTH / 2) ? ball.x + ball.radius : ball.x - ball.radius;
+	float ball_border_pos = paddle.x > (WORLD_WIDTH / 2) ? ball.right_border : ball.left_border;
 
 	return (
 			ball_border_pos >= paddle.left_border &&
@@ -27,7 +27,7 @@ void	HandleBallPaddleCollision(Ball& b, Paddle& p, int dir)
 
 int	CheckBallCellingFloorCollision(Ball& ball)
 {
-	return ball.y <= 0 || ball.y >= WORLD_HEIGHT;
+	return ball.top_border <= 0 || ball.bot_border >= WORLD_HEIGHT;
 }
 
 void	HandleCellingFloorCollision(Ball& ball)
@@ -57,11 +57,21 @@ void	HandleBallWallCollision(Game& game)
 	}
 }
 
-void	UpdatePaddle(Paddle& p, float dt, int move_dir)
+void	UpdatePaddle(Paddle& paddle, float dt, int move_dir)
 {
-	float new_y = p.y - (dt * p.speed * move_dir);
+	float new_y = paddle.y - (dt * paddle.speed * move_dir);
 	
-	p.y = std::clamp(new_y, p.height / 2, WORLD_HEIGHT - (p.height / 2));
-	p.top_border = p.y - (p.height / 2);
-	p.bot_border = p.y + (p.height / 2);
+	paddle.y = std::clamp(new_y, paddle.height / 2, WORLD_HEIGHT - (paddle.height / 2));
+	paddle.top_border = paddle.y - (paddle.height / 2);
+	paddle.bot_border = paddle.y + (paddle.height / 2);
+}
+
+void	UpdateBall(Ball& ball, float dt)
+{
+	ball.x += dt * ball.speed * ball.vx;
+	ball.y += dt * ball.speed * ball.vy;
+	ball.left_border = ball.x - ball.radius;
+	ball.right_border = ball.x + ball.radius;
+	ball.top_border = ball.y - ball.radius;
+	ball.bot_border = ball.y + ball.radius;
 }

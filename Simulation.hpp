@@ -9,11 +9,12 @@ int		CheckBallPaddleCollision(Ball& ball, Paddle& paddle);
 void	HandleBallPaddleCollision(Ball& b, Paddle& p, int dir);
 
 int		CheckBallCellingFloorCollision(Ball& ball);
-void	HandleCellingFloorCollision(Ball& b);
+void	HandleCellingFloorCollision(Ball& ball);
 
 int		CheckBallWallCollision(Game& game);
 void	HandleBallWallCollision(Game& game);
 
-void	UpdatePaddle(Paddle& p, float dt, int move_dir);
+void	UpdatePaddle(Paddle& paddle, float dt, int move_dir);
+void	UpdateBall(Ball& ball, float dt);
 
 #endif

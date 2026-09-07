@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "ViewPort.hpp"
 #include <raylib.h>
+#include <string>
 
 
 constexpr int	INT(float v)
@@ -47,6 +48,12 @@ std::string	GetOverlayInfos(Game& game, float dt)
 	infos
 		+= "FPS : "   + std::to_string(GetFPS()) + "\n" 
 		+ "DT : "     + std::to_string(dt) + "\n"
+		+ "BALL_X :" + std::to_string(game.ball.x) + "\n"
+		+ "BALL_Y :" + std::to_string(game.ball.y) + "\n"
+		+ "BALL_LEFT_BORDER :" + std::to_string(game.ball.left_border) + "\n"
+		+ "BALL_RIGHT_BORDER :" + std::to_string(game.ball.right_border) + "\n"
+		+ "BALL_TOP_BORDER :" + std::to_string(game.ball.top_border) + "\n"
+		+ "BALL_BOT_BORDER :" + std::to_string(game.ball.bot_border) + "\n"
 		+ "PL_TOP : " + std::to_string(game.left_paddle.top_border) + "\n"
 		+ "PL_BOT : " + std::to_string(game.left_paddle.bot_border) + "\n"
 		+ "PR_TOP : " + std::to_string(game.right_paddle.top_border) + "\n"

@@ -10,6 +10,10 @@ constexpr float BASE_BALL_SPEED = 350.0f;
 constexpr float BASE_BALL_RADIUS = WORLD_HEIGHT / 48;
 constexpr float BASE_BALL_X = (WORLD_WIDTH / 2);
 constexpr float BASE_BALL_Y = (WORLD_HEIGHT / 2);
+constexpr float BASE_BALL_LEFT_BORDER = BASE_BALL_X - BASE_BALL_RADIUS;
+constexpr float BASE_BALL_RIGHT_BORDER = BASE_BALL_X + BASE_BALL_RADIUS;
+constexpr float BASE_BALL_TOP_BORDER = BASE_BALL_Y - BASE_BALL_RADIUS;
+constexpr float BASE_BALL_BOT_BORDER = BASE_BALL_Y + BASE_BALL_RADIUS;
 
 constexpr float BASE_PADDLE_SPEED = 300.0f;
 constexpr float BASE_PADDLE_HEIGHT = WORLD_HEIGHT / 5;
@@ -38,6 +42,8 @@ struct Paddle {
 };
 
 struct Ball {
+	float left_border, right_border;
+	float top_border, bot_border;
 	float x, y;
 	float vx, vy;
 	float radius;
