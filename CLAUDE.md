@@ -157,48 +157,63 @@ Rappelle-moi ces règles quand elles s'appliquent, sans que je le demande :
   `scaleX` / `scaleY`.
 - **Ressource graphique = durée de vie strictement incluse dans `InitWindow` … `CloseWindow`.**
   Chargée une fois avant la boucle, libérée après. Jamais dans la boucle de rendu, jamais en global.
+- **Découpage des fichiers par étape du tour, pas par entité.** `Simulation` fait avancer le monde,
+  `Render` dessine, `ViewPort` convertit, `Game` détient l'état. Pas de `Paddle.cpp` ni de `Ball.cpp`.
+- **Chaque `.cpp` déclare son interface dans le `.hpp` du même nom.** Aucun prototype ne se réfugie
+  dans un en-tête voisin — c'est comme ça qu'`Element.hpp` est devenu un fourre-tout.
+- **La simulation ne dépend pas de raylib.** Aucun appel raylib dans `Simulation` : ni entrée, ni
+  dessin, ni horloge. Vérifié mécaniquement, pas par discipline : la cible `tests` se lie **sans**
+  raylib. Si elle échoue sur des symboles raylib, c'est qu'une dépendance a fui.
+- **Le temps de simulation se compte, il ne se mesure pas.** `durée = nombre de pas × dt`, où `dt`
+  est un paramètre d'entrée choisi. Une horloge réelle (`GetTime`, `GetFrameTime`) répond à
+  « combien de temps ma machine a mis », jamais à « combien de temps s'est écoulé dans le jeu ».
+  Les deux horloges ne doivent jamais partager une variable.
+- **Un fichier naît quand un second consommateur en a besoin**, ou quand le fichier hôte devient
+  illisible. Pas parce qu'une catégorie existe. Cas d'école : `Simulation.cpp` était obligatoire
+  (deux `main()` ne se lient pas), un fichier d'entrées ne l'est pas encore.
 
 ---
 
 ## État courant
 
-**Jalon 2, non validé.** Le code est en place ; la mesure n'a pas été faite. C'est la seule chose
-qui bloque le passage au jalon 3.
+**Jalons 1 et 2 validés le 2026-09-07.**
 
-Mesures restantes :
+Ce qui a été mesuré, et comment :
 
-1. Traversée verticale complète d'une raquette, chronométrée à 30, 60 et 240 fps — les trois durées
-   doivent coïncider. Demande un chronomètre, pas une valeur instantanée : l'overlay seul ne suffit pas.
-2. Bord haut atteint exactement (`PL_TOP` à `0.000000`), sans dépassement ni marge résiduelle.
-3. Les quatre touches enfoncées ensemble : les deux raquettes bougent simultanément.
+- Durée d'une traversée verticale de raquette, identique à quatre pas de simulation (1/30, 1/60,
+  1/120, 1/240 s) : **0.6667 s** dans les quatre cas — vérification indépendante, 200 unités ÷ 300 u/s.
+  Mesuré par la cible `tests`, sans fenêtre, en comptant les pas (`durée = nb_pas × dt`) et non avec
+  une horloge réelle. Tolérance retenue : un pas, soit 33 ms au pire.
+- Bornes atteintes exactement : la boucle de mesure sort sur `bot_border == WORLD_HEIGHT`.
+- Mouvement simultané des deux raquettes : vérifié à la main dans le jeu.
 
-Points de la liste précédente, tous réglés : remise à zéro de l'intention en début de tour, clamp
-inconditionnel (`std::clamp`), division flottante sur les demi-hauteurs, intention sortie de `Paddle`,
-cas des deux touches simultanées tranché.
-
-Outillage construit depuis : overlay de debug (maintenu par TAB), classe `Game`, `ViewPort`, namespace
-`Render`. Né d'un vrai blocage — impossible de suivre les valeurs à l'œil — donc justifié ; mais le
-refactor s'est arrêté à mi-chemin, d'où la dette ci-dessous.
+**Jalon 3 ouvert** (balle + rebonds murs). Attention : `Simulation.cpp` contient déjà
+`HandleCellingFloorCollision` et `HandleBallWallCollision`, écrits avant l'ouverture du jalon et
+jamais validés. Critère à remplir : aucun collage, aucun rebond multiple sur un même contact.
 
 Dette ouverte, à traiter avant le jalon 4 :
 
-- `top_border` / `bot_border` ont trois domiciles : stockés dans `Paddle`, recalculés dans
-  `updatePaddle`, re-dérivés à la main au rendu — pendant que `Collision.cpp` lit le champ.
-  Violation directe de « une valeur, un seul domicile ». Signalé trois fois.
-- `serve_count` et `serve_dir` sont encore des variables locales de `main` alors qu'ils sont de
-  l'état de partie. Violation de « `Game` contient tout l'état de partie ».
+- `top_border` / `bot_border` ont maintenant **quatre** domiciles : champs de `Paddle`, recalcul dans
+  `UpdatePaddle`, re-dérivation à la main au rendu, et `ResetPaddlePos` dans `test.cpp`. Signalé
+  quatre fois. Violation de « une valeur, un seul domicile ».
 - Les fonctions de `Render` prennent `Game&` et `Paddle&` non-`const` : rien n'empêche le rendu de
-  modifier l'état.
-- `Element.hpp` mélange constantes de fenêtre, constantes de gameplay, structures et prototype de
-  collision. `header.hpp` est devenu un en-tête parapluie : les dépendances réelles de chaque `.cpp`
-  ne sont plus lisibles.
-- Avertissements de conversion restants : `SCREEN_W`, `WORLD_WIDTH`, `FPS` déclarés en `float` puis
-  passés à des API raylib qui attendent des `int` ; `ANGLE` calculé en `double` puis tronqué.
+  modifier l'état. Et `GetOverlayInfos` est déclarée hors du namespace `Render` alors qu'elle en fait
+  partie.
+- `header.hpp` est toujours un en-tête parapluie ; `Element.hpp` mélange constantes et structures.
+- **La police n'est jamais chargée.** `LoadFont("./Montserrat-Medium.ttf")` est relatif au répertoire
+  de travail, pas au binaire ; lancé depuis `build/`, le fichier est introuvable. L'overlay tourne
+  avec la police par défaut depuis le premier jour, et raylib ne le signale qu'en `WARNING`.
+- `Timer.cpp` / `Timer.hpp` ne sont plus appelés par personne mais restent dans les sources de `pong`.
+- La cible `tests` renvoie **0 même quand un cas échoue** : inutilisable dans un script tant que le
+  code de retour ne reflète pas le résultat. Et sa boucle de mesure sort sur une égalité flottante
+  (`!=`) : si la valeur ne tombait pas juste, le test ne signalerait pas d'échec — il bouclerait
+  indéfiniment.
+- `tests` est en `EXCLUDE_FROM_ALL` : la cible n'est pas construite par `cmake --build build` et peut
+  cesser de compiler sans que ça se voie.
 
-Question ouverte, à trancher **au jalon 5 et pas avant** : où vit la séquence d'un pas de simulation,
-aujourd'hui étalée dans le corps de la boucle de `main` et sans nom. Critère de décision : une fonction
-qui ne touche à aucun membre de `Game` n'a rien à faire dans `Game` ; déplacer du code dans une classe
-n'est pas une amélioration en soi.
+Question ouverte, à trancher **au jalon 5** : qui décide de l'ordre d'exécution des fonctions de
+`Simulation` ? Aujourd'hui c'est le corps de la boucle de `main`, et toute mesure doit rejouer cet
+ordre à la main.
 
 *(Section à mettre à jour à chaque validation de jalon.)*
 

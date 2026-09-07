@@ -11,7 +11,7 @@ Game::Game():
 		.y =			BASE_PADDLE_Y,
 		.width =		BASE_PADDLE_WIDTH,
 		.height =	BASE_PADDLE_HEIGHT,
-		.speed	=	BASE_PADDLE_SPEED,
+		.speed	=	BASE_PADDLE_SPEED
 	}),
 	right_paddle
 	({
@@ -23,7 +23,7 @@ Game::Game():
 		.y =			BASE_PADDLE_Y,
 		.width =		BASE_PADDLE_WIDTH,
 		.height =	BASE_PADDLE_HEIGHT,
-		.speed	=	BASE_PADDLE_SPEED,
+		.speed	=	BASE_PADDLE_SPEED
 	}),
 	ball
 	({

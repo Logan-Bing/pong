@@ -20,6 +20,14 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wconversion)
 
+add_executable(tests EXCLUDE_FROM_ALL
+	test.cpp
+	Simulation.cpp
+	Game.cpp
+)
+target_compile_options(tests PRIVATE -Wall -g -fsanitize=address)
+target_link_options(tests PRIVATE -fsanitize=address)
+
 # Symlink de compile_commands.json a la racine du projet
 add_custom_target(copy_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E create_symlink

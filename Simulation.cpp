@@ -38,6 +38,24 @@ void	HandleCellingFloorCollision(Ball& ball)
 	}
 }
 
+int	CheckBallWallCollision(Game& game)
+{
+	return (game.ball.x <= 0 || game.ball.x >= WORLD_WIDTH);
+}
+
+void	HandleBallWallCollision(Game& game)
+{
+	if (CheckBallWallCollision(game))
+	{
+		if (game.serve_count >= 2)
+		{
+			game.serve_dir = -game.serve_dir;
+			game.serve_count = 0;
+		}
+		game.setBallService();
+		game.serve_count++;
+	}
+}
 
 void	UpdatePaddle(Paddle& p, float dt, int move_dir)
 {

@@ -2,7 +2,6 @@
 #define __ELEMENT_HPP__
 
 #include <math.h>
-#include "raylib.h"
 #include "ViewPort.hpp"
 
 // (X, Y) défini le centre d'un objet

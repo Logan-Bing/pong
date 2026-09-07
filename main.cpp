@@ -1,3 +1,4 @@
+#include "Simulation.hpp"
 #include "header.hpp"
 
 // Créer un jeu de relfexe pour avoir un bonus
@@ -48,17 +49,7 @@ int main()
 		HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
 		HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
 		HandleCellingFloorCollision(game.ball);
-
-		if (game.ball.x <= 0 || game.ball.x >= WORLD_WIDTH)
-		{
-			if (game.serve_count >= 2)
-			{
-				game.serve_dir = -game.serve_dir;
-				game.serve_count = 0;
-			}
-			game.setBallService();
-			game.serve_count++;
-		}
+		HandleBallWallCollision(game);
 
 		// draw
 		BeginDrawing();
