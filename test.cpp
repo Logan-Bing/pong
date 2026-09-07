@@ -17,8 +17,10 @@ int	CompFloat(float a, float b, float diff)
 	return fabs(a - b) < diff;
 }
 
-int main()
+int	ElapsedTimeTest()
 {
+	int ret = 1;
+
 	Paddle paddle
 	{
 		.left_border = 	0,
@@ -62,6 +64,7 @@ int main()
 		{
 			std::cout << RED << "FAILED: ";
 			std::cout << times[i - 1] << "!=" << times[i] << std::endl;
+			ret = 0;
 		}
 		else
 		{
@@ -70,4 +73,11 @@ int main()
 		}
 		std::cout << RESET;
 	}
+
+	return (ret);
+}
+
+int main()
+{
+	return ElapsedTimeTest();
 }
