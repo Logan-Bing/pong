@@ -25,14 +25,14 @@ void	HandleBallPaddleCollision(Ball& b, Paddle& p, int dir)
 	}
 }
 
-int	CheckBallCellingFloorCollision(Ball& ball)
+int	CheckBallCeilingFloorCollision(Ball& ball)
 {
 	return ball.top_border <= 0 || ball.bot_border >= WORLD_HEIGHT;
 }
 
-void	HandleCellingFloorCollision(Ball& ball)
+void	HandleCeilingFloorCollision(Ball& ball)
 {
-	if (CheckBallCellingFloorCollision(ball))
+	if (CheckBallCeilingFloorCollision(ball))
 	{
 		ball.vy = -ball.vy;
 	}
@@ -40,7 +40,7 @@ void	HandleCellingFloorCollision(Ball& ball)
 
 int	CheckBallWallCollision(Game& game)
 {
-	return (game.ball.x <= 0 || game.ball.x >= WORLD_WIDTH);
+	return (game.ball.left_border <= 0 || game.ball.right_border >= WORLD_WIDTH);
 }
 
 void	HandleBallWallCollision(Game& game)

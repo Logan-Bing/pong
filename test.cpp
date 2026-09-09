@@ -1,3 +1,5 @@
+#include <cctype>
+#include <string>
 #include <vector>
 #include <iostream>
 #include "Simulation.hpp"
@@ -17,9 +19,14 @@ int	CompFloat(float a, float b, float diff)
 	return fabs(a - b) < diff;
 }
 
+void	PrintTestTilte(const std::string& str)
+{
+	std::cout << BOLD_BLACK << BG_WHITE << "----" + str + "----" << RESET << std::endl;
+}
+
 int	TestElapsedTime()
 {
-	int ret = 1;
+	int ret = 0;
 
 	Paddle paddle
 	{
@@ -34,7 +41,7 @@ int	TestElapsedTime()
 		.speed	=		BASE_PADDLE_SPEED
 	};
 
-	std::cout << BOLD_BLACK << BG_WHITE << "---- ELAPSED TIME TEST ----" << RESET << std::endl;
+	PrintTestTilte("ELAPSED TIME");
 
 	std::vector<float> dts =
 	{
@@ -64,7 +71,7 @@ int	TestElapsedTime()
 		{
 			std::cout << RED << "FAILED: ";
 			std::cout << times[i - 1] << "!=" << times[i] << std::endl;
-			ret = 0;
+			ret = 1;
 		}
 		else
 		{
@@ -77,12 +84,47 @@ int	TestElapsedTime()
 	return (ret);
 }
 
-int	TestFloorCellingCollision()
+int	TestFloorCeilingCollision()
 {
-	int ret = 1;
+	Game game;
+	int boundary_touch = 0;
+	int hit_ceiling = 0;
+	int hit_floor = 0;
+
+	game.ball.vx = 0;
+	game.ball.vy = -1;
+
+	PrintTestTilte("FLOOR - CELLING COLLISION");
+
+	while (boundary_touch < 1000)
+	{
+		UpdateBall(game.ball, 1.0f/60);
+		if (game.ball.top_border <= 0)
+		{
+			hit_ceiling++;
+			hit_floor = 0;
+			boundary_touch++;
+		}
+		if (game.ball.bot_border >= WORLD_HEIGHT)
+		{
+			hit_floor++;
+			hit_ceiling = 0;
+			boundary_touch++;
+		}
+		if (hit_floor > 1 || hit_ceiling > 1)
+		{
+			std::string err = hit_floor > 1 ? "FLOOR get hit more than once" : "CEILING get hit more than once";
+			std::cout << RED << "ERROR: " << err << RESET << std::endl;
+			return 1;
+		}
+		HandleCeilingFloorCollision(game.ball);
+	}
+
+	std::cout << GREEN << "SUCCESS" << RESET << std::endl;
+	return 0;
 }
 
 int main()
 {
-	Ball b;
+	return (TestElapsedTime() || TestFloorCeilingCollision());
 }
