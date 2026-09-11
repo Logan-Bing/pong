@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <iostream>
 
+constexpr float FIXED_DT = 0.01f;
+
 int		CheckBallPaddleCollision(Ball& ball, Paddle& paddle);
 void	HandleBallPaddleCollision(Ball& b, Paddle& p, int dir);
 

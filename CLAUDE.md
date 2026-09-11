@@ -288,6 +288,41 @@ départ × 16 angles, ordre de `main` rejoué à l'identique). Avant : 23 collag
 bloquées. Après : **0 collage**, maximum 2 images consécutives dans un mur. En retirant la seule
 condition de direction, les 23 collages reviennent à l'identique — c'est bien elle qui corrige.
 
+**Correction du 2026-09-11 — la trace ci-dessus part d'un état inatteignable en jeu.** L'entrée se fait
+avec ‖vy‖ = 0.9320. Or une frappe de raquette donne au plus `sin(60°)` = 0.8660 (|ratio| ≤ 1), un
+rebond mur ne fait que recopier la norme, et le service met `vy` à 0. Ce 0.9320 vient donc
+forcément d'un **angle de départ du balayage au-delà de ±60°**. Le mécanisme décrit reste juste ;
+le scénario chiffré, lui, ne peut pas arriver en partie. Les 23 collages du balayage de 9 446 400
+scénarios incluent ces angles hors plage : on ne sait pas combien auraient été atteignables.
+
+Rejoué sur le code du commit `9e39c9f` + correction n°1, ancien prédicat, raquettes à y = 25,
+14 400 positions × 16 angles × 2 sens :
+
+| fps | angles de départ | pire collage (images consécutives) |
+|---|---|---|
+| 60 | −67.5° … +67.5° | 114 (entrée pas 5.3893, sortie pas 5.0397) |
+| 60 | −60° … +60° | **0 collage** |
+| 240 | −60° … +60° | **23 972 sur 24 000** — bloquée pour de bon |
+| 240 | −60° … +60°, prédicat corrigé | 2 |
+
+Calcul direct (raquette collée en haut, y = 25 ; profondeur = rayon − `ball.y`) : collage
+possible si profondeur < pas d'entrée **et** profondeur > pas de sortie, avec
+pas = 350 u/s × dt × ‖vy‖ et ‖vy‖ de sortie = `sin(ANGLE × (25 − y) / 25)`. ‖vy‖ d'entrée minimale
+pour qu'une fenêtre existe :
+
+| fps | ‖vy‖ d'entrée minimale |
+|---|---|
+| 30 | impossible (le pas de sortie dépasse toujours le rayon) |
+| 60 | 0.8624 — quasi l'angle max, fenêtre en y de 0.1566 à 0.1784 |
+| 240 | 0.768 — courant en jeu |
+
+**Le bug dépendait donc de la fréquence d'image** : inexistant à 30 fps, quasi inatteignable à 60,
+systématique à 240. C'est exactement le genre d'écart que le jalon 5 doit rendre impossible.
+
+**Conséquence pour le test à écrire :** à 60 fps avec des angles réalistes, un test d'invariant ne
+peut **pas** détecter la suppression de la condition de direction. Il doit tourner à `dt` = 1/240
+(ou partir d'angles hors plage, mais alors il teste un état que le jeu n'atteint pas).
+
 **Ce correctif n'a aucun filet.** `tests` ne fait jamais tourner `HandleBallPaddleCollision` : on peut
 supprimer la condition de direction, la suite affiche SUCCESS. C'est le prochain test à écrire, et
 l'invariant est déjà connu — « la balle ne reste pas plus de N images dans un mur ». Il ne nomme

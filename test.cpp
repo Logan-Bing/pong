@@ -124,12 +124,73 @@ int	TestFloorCeilingCollision()
 	return 0;
 }
 
-int	TestPaddleHit()
+int	TestDtVariable()
 {
+	Game game;
+	float dt = 1.0f / 60;
+	float offset = game.right_paddle.left_border - game.ball.right_border;
+	float ball_step = game.ball.speed * dt * game.ball.vx;
 
+	int nb_step_offset = offset / ball_step;
+	int ball_hit_paddle = 0;
+
+	while (nb_step_offset > 0)
+	{
+		if (nb_step_offset == 1)
+			dt = 1.0;
+		integrate(game, dt);
+		nb_step_offset--;
+		if (CheckBallPaddleCollision(game.ball, game.right_paddle))
+				ball_hit_paddle = 1;
+	}
+
+	if (!ball_hit_paddle)
+		std::cout << "The ball didn't hit the paddle" << std::endl;
+	else
+		std::cout << "The ball hit the paddle" << std::endl;
+
+	return 0;
+}
+
+int	TestFixedDt()
+{
+	Game game;
+	float dt = 0.01;
+	float offset = game.right_paddle.left_border - game.ball.right_border;
+	float ball_step = game.ball.speed * dt * game.ball.vx;
+	float currentFrameTime = 1.0 / 60;
+	float accumulator = 0;
+
+	int nb_step_offset = offset / ball_step;
+	int ball_hit_paddle = 0;
+
+	while (nb_step_offset > 0)
+	{
+		if (nb_step_offset == 1)
+			currentFrameTime = 1.0;
+
+		accumulator += currentFrameTime;
+	
+		while (accumulator >= dt)
+		{
+			integrate(game, dt);
+			nb_step_offset--;
+			accumulator -= dt;
+			if (CheckBallPaddleCollision(game.ball, game.right_paddle))
+					ball_hit_paddle = 1;
+		}
+	}
+
+	if (!ball_hit_paddle)
+		std::cout << "The ball didn't hit the paddle" << std::endl;
+	else
+		std::cout << "The ball hit the paddle" << std::endl;
+
+	return 0;
 }
 
 int main()
 {
-	return (TestElapsedTime() || TestFloorCeilingCollision());
+	TestFixedDt();
+	// return (TestElapsedTime() || TestFloorCeilingCollision());
 }

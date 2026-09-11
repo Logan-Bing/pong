@@ -3,7 +3,6 @@
 #include <raylib.h>
 
 // Créer un jeu de relfexe pour avoir un bonus
-// Colorier les bordure de l'offset en noir
 
 // Entities 
 // 	Paddle
@@ -16,6 +15,7 @@ int main()
 	// Game init
 	Game game;
 	ViewPort view;
+	float accumulator = 0;
 
 	// Window init
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
@@ -26,7 +26,7 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		float dt = GetFrameTime();
+		float frameTime = GetFrameTime();
 		view.screenW = GetScreenWidth();
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
@@ -40,14 +40,20 @@ int main()
 		if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
 		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
 
-		// update
-		integrate(game, dt);
+		accumulator += frameTime;
 
-		// modifie vitesse
-		HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
-		HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
-		HandleCeilingFloorCollision(game.ball);
-		HandleBallWallCollision(game);
+		// update
+		while (accumulator >= FIXED_DT)
+		{
+			HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
+			HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
+			HandleCeilingFloorCollision(game.ball);
+			HandleBallWallCollision(game);
+
+			integrate(game, FIXED_DT);
+			accumulator -= FIXED_DT;
+		}
+
 
 		// draw
 		BeginDrawing();
@@ -64,7 +70,7 @@ int main()
 
 			// OVERLAY
 			if (IsKeyDown(KEY_TAB))
-				Render::DrawOverlay(game, dt, font);
+				Render::DrawOverlay(game, FIXED_DT, font);
 
 		EndDrawing();
 	}
