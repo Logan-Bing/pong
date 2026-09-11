@@ -31,23 +31,22 @@ int main()
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
 
+		game.left_paddle_move_dir = 0;
+		game.right_paddle_move_dir = 0;
+
+		if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
+		else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
+
+		if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
+		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
+
 		// update
-		int p_left_move_dir = 0;
-		int p_right_move_dir = 0;
+		integrate(game, dt);
 
-		if (IsKeyDown(KEY_W)) p_left_move_dir = 1;
-		else if (IsKeyDown(KEY_S)) p_left_move_dir = -1;
-
-		if (IsKeyDown(KEY_UP)) p_right_move_dir = 1;
-		else if (IsKeyDown(KEY_DOWN)) p_right_move_dir = -1;
-
-		UpdatePaddle(game.left_paddle, dt, p_left_move_dir);
-		UpdatePaddle(game.right_paddle, dt, p_right_move_dir);
-		UpdateBall(game.ball, dt);
-
+		// modifie vitesse
 		HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
 		HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
-		HandleCellingFloorCollision(game.ball);
+		HandleCeilingFloorCollision(game.ball);
 		HandleBallWallCollision(game);
 
 		// draw

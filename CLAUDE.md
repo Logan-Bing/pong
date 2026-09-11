@@ -26,7 +26,8 @@ Critère de réussite du projet : je dois pouvoir expliquer seul chaque décisio
 
 - l'explication du concept, du mécanisme, des compromis, des alternatives écartées et de leurs raisons ;
 - le vocabulaire exact pour que je puisse chercher seul ;
-- des questions qui isolent la source d'un bug plutôt que sa correction ;
+- la localisation d'un bug et la **direction de la correction, en mots** (quoi changer et pourquoi),
+  sans l'écrire en code ;
 - une critique franche de mon code : justesse, cas limites, structure, lisibilité, nommage — sans le réécrire ;
 - des reformulations sous un autre angle quand je n'ai pas compris.
 
@@ -42,19 +43,28 @@ implémentation prête à coller.
 
 ## Méthode de travail
 
-- Socratique et itérative. Je donne ma compréhension, tu la corriges ou tu l'étends.
-- **Si je pose une question sans avoir formulé d'hypothèse, demande-la avant de répondre.**
-  Exception raisonnable : un exposé sur un domaine que je n'ai jamais abordé — on ne formule pas
-  d'hypothèse sur ce qu'on n'a jamais vu. Dans ce cas, expose, puis renvoie-moi des questions.
+- **Réponds d'abord, questionne ensuite.** Donne l'explication et le raisonnement complet directement.
+  Le but est que j'avance ; les questions servent à vérifier que j'ai compris, pas à me faire
+  mériter la réponse.
+- **Au plus une ou deux questions par réponse**, sur le point qui compte vraiment. Jamais une liste
+  de devoirs à rendre avant de pouvoir continuer.
+- Si je pose une question sans hypothèse, réponds quand même. Tu peux me demander ensuite ce que
+  j'en pensais, si ça apporte quelque chose.
+- **Quand je demande de l'aide pour décider, donne une recommandation** avec son raisonnement et
+  ses compromis. Je peux la contester ; c'est à moi de trancher, mais pas à moi de tout redériver.
 - Va jusqu'au *pourquoi c'est comme ça*, pas seulement au *comment ça marche*.
 - Ne me félicite pas par réflexe. Si mon approche a un défaut, dis-le directement.
 - Préviens-moi avant l'impasse, pas après.
-- J'ai tendance à trouver la bonne conclusion sans avoir consolidé le raisonnement.
-  N'accepte pas la conclusion seule : demande la dérivation.
+- J'ai tendance à trouver la bonne conclusion sans avoir consolidé le raisonnement. Quand ma
+  conclusion est juste mais ma justification faible, **montre-moi la justification solide** plutôt
+  que de me la faire chercher — et signale-le en une phrase.
+- **Termine par la prochaine action concrète** quand c'est pertinent : ce que je peux faire tout de
+  suite dans le code.
 
 ### Quand je bloque
 
-Signal : « j'ai du mal », « ça n'a aucun sens tes explications », reformulation manifestement fausse.
+Signal : « j'ai du mal », « ça n'a aucun sens tes explications », « j'ai pas l'impression d'avancer »,
+frustration, reformulation manifestement fausse.
 
 Réaction correcte :
 
@@ -73,15 +83,16 @@ Réaction correcte :
 - Distingue explicitement : **bug bloquant** / **cas limite** / **dette structurelle** / **nommage**.
 - Termine par un ordre de priorité. Tout n'a pas le même poids.
 - Si j'ai ignoré un point d'une critique précédente, redis-le et signale qu'il est ignoré.
-- Pour chaque problème : décris le symptôme et déroule un cas numérique qui le déclenche.
-  Ne donne pas la correction. Pose la question qui y mène.
+- Pour chaque problème : décris le symptôme, déroule un cas numérique qui le déclenche, et indique
+  en mots la direction de la correction. Pas de code corrigé.
 
 ### Quand je propose une abstraction
 
 Signal : je veux introduire un design pattern, une couche, une généralisation.
 
-Demande **ce que cette abstraction me permet de faire que la version simple ne permet pas**,
-en termes concrets et présents. Si je n'ai pas de réponse, c'est du sur-design et tu me le dis.
+Vérifie **ce que cette abstraction me permet de faire que la version simple ne permet pas**,
+en termes concrets et présents. Si tu vois le bénéfice concret, dis-le moi directement ; s'il n'y
+en a pas, c'est du sur-design et tu me le dis.
 Un pattern appliqué parce qu'un livre le mentionne viole directement la règle
 « si je ne sais pas expliquer pourquoi une ligne est là, elle ne doit pas y être ».
 
@@ -187,19 +198,102 @@ Ce qui a été vérifié pour le jalon 2 :
 **Ce que la cible `tests` prouve — et ce qu'elle ne prouve pas.** Elle vérifie que le déplacement
 d'une raquette est proportionnel à `dt` : 0.6667 s de temps simulé pour quatre pas différents
 (1/30, 1/60, 1/120, 1/240), soit 200 unités ÷ 300 u/s. C'est un **test de non-régression permanent**
-sur la formule de déplacement, pas la validation d'un jalon. À vitesse constante, `nb_pas × dt` est
-invariant par arithmétique : le test ne peut échouer que si `dt` disparaissait de la formule
-(`y += speed`). Il ne dit rien d'un `dt` variable ou irrégulier, et le fixed timestep du jalon 5
-n'existe pas encore — il n'y a rien à mesurer de ce côté.
+sur la formule de déplacement, pas la validation d'un jalon.
+
+**Correction du 2026-09-09 — l'affirmation précédente était fausse.** Il était écrit ici que le test
+« ne peut échouer que si `dt` disparaissait de la formule (`y += speed`) ». Vérifié par mutation :
+en supprimant `dt` de `UpdatePaddle`, le test affiche **4 SUCCESS**. Idem avec une raquette à moitié
+vitesse. Deux causes cumulées :
+
+- la tolérance de `CompFloat` vaut `dts.front()` = 1/30 ≈ 0.033, une valeur **absolue** sans rapport
+  avec la grandeur comparée ; quand les temps mesurés valent eux-mêmes 0.03, tout est « égal » ;
+- le test compare **les mesures entre elles**, jamais à la valeur attendue (0.6667 s). Ce nombre
+  n'apparaît nulle part. Une simulation uniformément fausse reste cohérente avec elle-même.
+
+Ce qu'il attrape réellement aujourd'hui : un pas dont la durée dépend de `dt` autrement que
+linéairement (mutant en `dt²` : détecté). Rien d'autre.
 
 Acquis réutilisable : une cible qui compile et tourne **sans raylib et sans fenêtre**, avec un `dt`
 choisi. C'est l'infrastructure dont le jalon 5 aura besoin ; elle est déjà là.
 
-**Jalon 3 ouvert** (balle + rebonds murs). Attention : `Simulation.cpp` contient déjà
-`HandleCellingFloorCollision` et `HandleBallWallCollision`, écrits avant l'ouverture du jalon et
-jamais validés. Critère à remplir : aucun collage, aucun rebond multiple sur un même contact.
+**Jalon 3 validé le 2026-09-09.** Critère : aucun collage, aucun rebond multiple sur un même contact.
 
-Dette ouverte, à traiter avant le jalon 4 :
+Périmètre retenu : « rebonds murs » = les murs contre lesquels la balle rebondit, donc sol et
+plafond. Les murs gauche/droite ne produisent pas de rebond mais un service : ils relèvent du
+**jalon 7**, pas d'ici. `HandleBallWallCollision` reste donc non validé, et c'est normal.
+
+Ce qui a été vérifié :
+
+- **Démonstration, pas seulement mesure.** Tant que ‖vy‖ ne change pas entre deux images, le pas qui
+  sort la balle du mur égale le pas qui l'y a fait entrer. Or le dépassement ne peut pas excéder le
+  pas qui l'a produit. Donc la balle ressort toujours, en une image : le collage est **impossible par
+  arithmétique**, pour toute vitesse, tout `dt`, toute position de départ. Ce n'est pas une propriété
+  échantillonnée, c'est un théorème — aucun nombre d'itérations ne pouvait l'établir ni l'infirmer.
+- **Le test sert à détecter la rupture de cette propriété**, pas à la découvrir. Mutation :
+  rebond supprimé → détecté ; rebond amorti `×0.9` (donc pas de sortie < pas d'entrée, donc collage)
+  → détecté au 9ᵉ aller-retour.
+- **Compteurs symétriques.** `hit_floor` / `hit_ceiling` qui se remettent à zéro l'un l'autre : l'état
+  « aucun contact encore » est encodé par les deux à zéro, et non par une valeur ambiguë. Balayage de
+  32000 configurations (400 fps × 40 positions de départ × 2 sens) : aucun verdict erroné. La version
+  précédente, à compteur signé unique, échouait faussement sur les 16000 cas partant vers le haut.
+
+**Jalon 4 validé le 2026-09-09.** Critère : toucher le bord produit un angle marqué et jouable.
+
+Angle de sortie mesuré selon le point d'impact (raquette de 50 u, `ANGLE` = 60°) :
+
+| impact depuis le centre | −25 u (bord) | −12.5 u | 0 (centre) | +12.5 u | +25 u (bord) |
+|---|---|---|---|---|---|
+| angle | −60.0° | −30.0° | 0.0° | +30.0° | +60.0° |
+
+Linéaire, ±60° aux bords, identique sur les deux raquettes — seul `vx` change de signe. Norme
+conservée (`cos² + sin² = 1`), donc la vitesse de la balle ne dérive pas au fil des échanges.
+« Jouable » vérifié à la main : bord extrême et raquette collée en haut/bas.
+
+**Deux bugs trouvés et corrigés pendant ce jalon.**
+
+*1. La physique dépendait de la raquette touchée.* `b.vy = sinf(a) * dir` appliquait à la déviation
+verticale le facteur qui ne sert qu'à choisir le sens **horizontal** du renvoi. Résultat : le même
+point d'impact déviait vers le haut sur une raquette et vers le bas sur l'autre. Corrigé en
+`b.vy = sinf(a)` — `cosf(a)` reste positif sur ±60°, donc `dir` fait tout son travail sur `vx` seul.
+
+*2. Collage dans un mur après une frappe.* La garantie de non-collage du jalon 3 reposait sur
+« ‖vy‖ constante entre deux images ». `HandleBallPaddleCollision` ne l'inverse pas, il l'**écrase**
+(`sinf(a)`) — l'hypothèse tombe. Trace, raquettes en haut, balle partie de (137.20, 87.00) :
+
+```
+img | top_border |    vy     |
+106 |     0.2382 |  -0.9320  | pas encore dans le plafond
+107 |    -5.1987 |  -0.8658  | entree : pas de 5.4367, profondeur 5.1987
+108 |    -0.1480 |  +0.8658  | sortie : pas de 5.0506 -> il manque 0.1481
+109 |    -5.1987 |  -0.8658  | inversee alors qu'elle sortait -> retour case depart
+       ... 2893 images consecutives dans le mur
+```
+
+Entrée avec un pas de 5.4367, sortie avec un pas de 5.0506 : la balle tombe dans un trou plus
+profond que sa propre enjambée. Et comme l'ancien handler inversait `vy` à **chaque** image de
+contact, elle n'avait jamais deux pas de suite vers la sortie.
+
+Cause : le prédicat demandait « y a-t-il contact ? » et jamais « la balle va-t-elle encore **vers**
+ce mur ? ». Corrigé en portant la direction dans le prédicat lui-même :
+
+```
+(top_border <= 0 && vy < 0) || (bot_border >= WORLD_HEIGHT && vy > 0)
+```
+
+Un cas par mur, chacun = « je suis dedans » **et** « je m'y enfonce encore ». Une balle déjà en train
+de sortir n'est plus touchée : elle prend autant d'images qu'il lui en faut.
+
+Vérification : balayage de **9 446 400 scénarios** (41 hauteurs de raquette × 120 × 120 positions de
+départ × 16 angles, ordre de `main` rejoué à l'identique). Avant : 23 collages, jusqu'à 2893 images
+bloquées. Après : **0 collage**, maximum 2 images consécutives dans un mur. En retirant la seule
+condition de direction, les 23 collages reviennent à l'identique — c'est bien elle qui corrige.
+
+**Ce correctif n'a aucun filet.** `tests` ne fait jamais tourner `HandleBallPaddleCollision` : on peut
+supprimer la condition de direction, la suite affiche SUCCESS. C'est le prochain test à écrire, et
+l'invariant est déjà connu — « la balle ne reste pas plus de N images dans un mur ». Il ne nomme
+aucune fonction, donc il couvrira aussi le prochain truc qui touchera à `vy`.
+
+Dette ouverte, à traiter avant le jalon 5 :
 
 - `top_border` / `bot_border` ont maintenant **quatre** domiciles : champs de `Paddle`, recalcul dans
   `UpdatePaddle`, re-dérivation à la main au rendu, et `ResetPaddlePos` dans `test.cpp`. Signalé
@@ -212,12 +306,36 @@ Dette ouverte, à traiter avant le jalon 4 :
   de travail, pas au binaire ; lancé depuis `build/`, le fichier est introuvable. L'overlay tourne
   avec la police par défaut depuis le premier jour, et raylib ne le signale qu'en `WARNING`.
 - `Timer.cpp` / `Timer.hpp` ne sont plus appelés par personne mais restent dans les sources de `pong`.
-- La cible `tests` renvoie **0 même quand un cas échoue** : inutilisable dans un script tant que le
-  code de retour ne reflète pas le résultat. Et sa boucle de mesure sort sur une égalité flottante
-  (`!=`) : si la valeur ne tombait pas juste, le test ne signalerait pas d'échec — il bouclerait
-  indéfiniment.
+- ~~La cible `tests` renvoie 0 même quand un cas échoue.~~ **Corrigé le 2026-09-09** : 0 en succès,
+  1 en échec, vérifié par mutation.
+- `TestElapsedTime` est aveugle à ce qu'il est censé garantir (voir la correction plus haut) :
+  tolérance absolue, et comparaison des mesures entre elles au lieu d'une comparaison à 0.6667 s.
+- **Les deux tests sont combinés avec un opérateur court-circuitant** (`||` aujourd'hui, `&&` avant :
+  comportement identique). Quand le premier échoue, le second n'est jamais exécuté. Les résultats
+  sont combinés avant d'avoir fini d'être produits.
+- **La boucle de `TestFloorCeilingCollision` est bornée par le code testé** : `while (boundary_touch
+  < 1000)`, et `boundary_touch` n'avance que sur un contact. Mutant « balle immobile en y » → boucle
+  infinie au lieu d'un échec. Même classe que la boucle de mesure de `TestElapsedTime`, qui sort
+  toujours sur une égalité flottante (`!=`). Le budget de pas et le compteur d'événements sont la
+  même variable ; ce sont deux grandeurs distinctes.
+- **`TestFloorCeilingCollision` explore 2 configurations, pas 1000.** Le handler ne repositionne
+  jamais la balle et chaque pas vaut exactement ±`speed·dt` : `y` reste à vie sur le réseau
+  `y₀ + k·pas`. Mesuré sur 200 000 pas : **2 valeurs de dépassement distinctes**, quel que soit `y₀`.
+  Les contacts 3 à 1000 sont des rejeux littéraux du premier.
+- `CheckBallCeilingFloorCollision` ne répond plus à la question que son nom pose. Depuis le jalon 4
+  elle signifie « faut-il rebondir ? », pas « y a-t-il contact ? » : une balle enfoncée dans le
+  plafond mais qui redescend est bien en contact, et la fonction renvoie `false`. À renommer.
+  (Corollaire : la recopie du prédicat dans `test.cpp` lignes 102 et 108 n'est **plus** une
+  duplication — le test pose la question du contact, la simulation celle du rebond. Deux prédicats
+  distincts, deux domiciles légitimes. Point de dette retiré.)
+- `PrintTestTilte` (typo), et le titre affiché dit encore `FLOOR - CELLING COLLISION` alors que l'API
+  a été renommée en `Ceiling`.
 - `tests` est en `EXCLUDE_FROM_ALL` : la cible n'est pas construite par `cmake --build build` et peut
   cesser de compiler sans que ça se voie.
+- `CheckBallWallCollision` est passé du centre (`ball.x`) aux bords (`left_border` / `right_border`)
+  le 2026-09-09, dans un commit de test et sans couverture. Cohérent avec sol/plafond, donc
+  probablement le bon choix — mais il déplace le déclenchement du service. À justifier ou à revoir
+  au jalon 7.
 
 Question ouverte, à trancher **au jalon 5** : qui décide de l'ordre d'exécution des fonctions de
 `Simulation` ? Aujourd'hui c'est le corps de la boucle de `main`, et toute mesure doit rejouer cet

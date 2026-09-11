@@ -98,7 +98,7 @@ int	TestFloorCeilingCollision()
 
 	while (boundary_touch < 1000)
 	{
-		UpdateBall(game.ball, 1.0f/60);
+		UpdateBall(game, 1.0f/60);
 		if (game.ball.top_border <= 0)
 		{
 			hit_ceiling++;
@@ -122,6 +122,11 @@ int	TestFloorCeilingCollision()
 
 	std::cout << GREEN << "SUCCESS" << RESET << std::endl;
 	return 0;
+}
+
+int	TestPaddleHit()
+{
+
 }
 
 int main()

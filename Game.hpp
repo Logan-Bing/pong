@@ -9,8 +9,11 @@ class Game
 	  Paddle	left_paddle;
 	  Paddle	right_paddle;
 	  Ball		ball;
+	  int 		left_paddle_move_dir;
+	  int 		right_paddle_move_dir;
 	  float		serve_dir;
 	  int		serve_count;
+	  int		reset;
 
 	  Game();
 	  void	setBallService();

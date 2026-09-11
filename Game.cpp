@@ -38,8 +38,11 @@ Game::Game():
 		.radius =	BASE_BALL_RADIUS,
 		.speed =	BASE_BALL_SPEED
 	}),
+	left_paddle_move_dir(0),
+	right_paddle_move_dir(0),
 	serve_dir(1.0f),
-	serve_count(1)
+	serve_count(1),
+	reset(0)
 {}
 
 void	Game::setBallService()

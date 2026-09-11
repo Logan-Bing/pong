@@ -21,13 +21,13 @@ void	HandleBallPaddleCollision(Ball& b, Paddle& p, int dir)
 		float a = ANGLE * ratio;
 
 		b.vx = cosf(a) * dir;
-		b.vy = sinf(a) * dir;
+		b.vy = sinf(a);
 	}
 }
 
 int	CheckBallCeilingFloorCollision(Ball& ball)
 {
-	return ball.top_border <= 0 || ball.bot_border >= WORLD_HEIGHT;
+	return ((ball.top_border <= 0 && ball.vy < 0) || (ball.bot_border >= WORLD_HEIGHT && ball.vy > 0));
 }
 
 void	HandleCeilingFloorCollision(Ball& ball)
@@ -52,7 +52,7 @@ void	HandleBallWallCollision(Game& game)
 			game.serve_dir = -game.serve_dir;
 			game.serve_count = 0;
 		}
-		game.setBallService();
+		game.reset = 1;
 		game.serve_count++;
 	}
 }
@@ -66,12 +66,25 @@ void	UpdatePaddle(Paddle& paddle, float dt, int move_dir)
 	paddle.bot_border = paddle.y + (paddle.height / 2);
 }
 
-void	UpdateBall(Ball& ball, float dt)
+void	UpdateBall(Game& game, float dt)
 {
-	ball.x += dt * ball.speed * ball.vx;
-	ball.y += dt * ball.speed * ball.vy;
-	ball.left_border = ball.x - ball.radius;
-	ball.right_border = ball.x + ball.radius;
-	ball.top_border = ball.y - ball.radius;
-	ball.bot_border = ball.y + ball.radius;
+	if (game.reset)
+	{
+		game.setBallService();
+		game.reset = 0;
+	}
+
+	game.ball.x += dt * game.ball.speed * game.ball.vx;
+	game.ball.y += dt * game.ball.speed * game.ball.vy;
+	game.ball.left_border = game.ball.x - game.ball.radius;
+	game.ball.right_border = game.ball.x + game.ball.radius;
+	game.ball.top_border = game.ball.y - game.ball.radius;
+	game.ball.bot_border = game.ball.y + game.ball.radius;
+}
+
+void	integrate(Game& game, float dt)
+{
+		UpdatePaddle(game.left_paddle, dt, game.left_paddle_move_dir);
+		UpdatePaddle(game.right_paddle, dt, game.right_paddle_move_dir);
+		UpdateBall(game, dt);
 }
