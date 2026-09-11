@@ -39,16 +39,7 @@ int main()
 		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
 		else game.right_paddle_move_dir = 0;
 
-		accumulator += frameTime;
-		if (frameTime >= 0.25) frameTime = 0.25;
-
-		// update
-		while (accumulator >= FIXED_DT)
-		{
-			DetectCollisions(game);
-			integrate(game, FIXED_DT);
-			accumulator -= FIXED_DT;
-		}
+		RunSimulation(game, frameTime, accumulator);
 
 		// draw
 		BeginDrawing();

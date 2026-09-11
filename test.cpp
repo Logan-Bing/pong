@@ -138,7 +138,7 @@ int	TestDtVariable()
 	{
 		if (nb_step_offset == 1)
 			dt = 1.0;
-		integrate(game, dt);
+		Integrate(game, dt);
 		nb_step_offset--;
 		if (CheckBallPaddleCollision(game.ball, game.right_paddle))
 				ball_hit_paddle = 1;
@@ -173,7 +173,7 @@ int	TestFixedDt()
 	
 		while (accumulator >= dt)
 		{
-			integrate(game, dt);
+			Integrate(game, dt);
 			nb_step_offset--;
 			accumulator -= dt;
 			if (CheckBallPaddleCollision(game.ball, game.right_paddle))

@@ -393,9 +393,22 @@ Dette ouverte, à traiter avant le jalon 5 :
   probablement le bon choix — mais il déplace le déclenchement du service. À justifier ou à revoir
   au jalon 7.
 
-Question ouverte, à trancher **au jalon 5** : qui décide de l'ordre d'exécution des fonctions de
-`Simulation` ? Aujourd'hui c'est le corps de la boucle de `main`, et toute mesure doit rejouer cet
-ordre à la main.
+~~Question ouverte, à trancher **au jalon 5** : qui décide de l'ordre d'exécution des fonctions de
+`Simulation` ?~~ **Tranchée le 2026-09-11 : `Simulation`.** `UpdateSimulation` fait un pas complet
+(collisions puis intégration, à `FIXED_DT`), `RunSimulation` consomme une durée d'image (plafonnée
+à 0.25 s, puis accumulée) et enchaîne les pas. `main` ne fournit que la durée d'image, l'accumulateur
+et les intentions ; il ne connaît plus l'ordre. Un test appelle les mêmes fonctions que le jeu.
+
+**Jalon 5 — pas encore validé.** Mesure faite hors dépôt (banc jetable appelant `RunSimulation`) :
+durées d'image exactes 1/30, 1/60, 1/200, entrées changeant uniquement sur des multiples de 0.1 s,
+300 s simulées, état comparé toutes les 0.1 s avec `==` → **0 écart sur 6000 comparaisons**. Avec des
+entrées changeant hors de ces instants → écarts quasi partout : les entrées sont lues une fois par
+image, donc une touche tombe sur un pas différent selon le fps. Limite inhérente, pas un bug du
+fixed timestep. Reste à écrire : ce test, dans `tests`.
+
+Cas limite constaté : une image de 2 s (plafonnée à 0.25 s) donne **24 pas, pas 25**. 0.01 n'est pas
+représentable en `float` ; le 25ᵉ pas part à l'image suivante, rien n'est perdu. Un nombre de pas
+attendu calculé en décimal exact sera faux d'une unité.
 
 *(Section à mettre à jour à chaque validation de jalon.)*
 

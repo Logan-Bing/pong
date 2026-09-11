@@ -33,8 +33,8 @@ void	Render::DrawPaddle(ViewPort& view, Paddle& paddle)
 {
 	DrawRectangle
 		(
-			INT(view.scaleXElement(paddle.x) - (paddle.width / 2)), 
-			INT(view.scaleYElement(paddle.y - paddle.height / 2)), 
+			INT(view.scaleXElement(paddle.x - paddle.width / 2 )), 
+			INT(view.scaleYElement(paddle.y - paddle.height / 2 )), 
 			INT(view.scaleView(paddle.width)),
 			INT(view.scaleView(paddle.height)),
 			BLACK

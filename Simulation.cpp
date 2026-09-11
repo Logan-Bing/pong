@@ -82,7 +82,7 @@ void	UpdateBall(Game& game, float dt)
 	game.ball.bot_border = game.ball.y + game.ball.radius;
 }
 
-void	DetectCollisions(Game& game)
+void	ResolveCollisions(Game& game)
 {
 	HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
 	HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
@@ -90,9 +90,28 @@ void	DetectCollisions(Game& game)
 	HandleBallWallCollision(game);
 }
 
-void	integrate(Game& game, float dt)
+void	Integrate(Game& game, float dt)
 {
 		UpdatePaddle(game.left_paddle, dt, game.left_paddle_move_dir);
 		UpdatePaddle(game.right_paddle, dt, game.right_paddle_move_dir);
 		UpdateBall(game, dt);
+}
+
+void	StepSimulation(Game& game)
+{
+	ResolveCollisions(game);
+	Integrate(game, FIXED_DT);
+}
+
+void	RunSimulation(Game& game, float frameTime, float& accumulator)
+{
+	frameTime = std::min(frameTime, FRAMETIME_LIMIT);
+
+	accumulator += frameTime;
+	// update
+	while (accumulator >= FIXED_DT)
+	{
+		StepSimulation(game);
+		accumulator -= FIXED_DT;
+	}
 }
