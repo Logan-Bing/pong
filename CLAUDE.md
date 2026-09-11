@@ -158,9 +158,17 @@ Rappelle-moi ces règles quand elles s'appliquent, sans que je le demande :
   exemplaires). Symptôme à surveiller : la même expression apparaît deux fois dans le fichier.
 - **Deux touches opposées enfoncées : priorité fixe, la direction « haut » gagne** (W à gauche,
   UP à droite). Décision assumée, pas un effet de bord de l'ordre des `if`.
-- **`Game` contient tout l'état de partie, et rien d'autre.** Critère de tri : si je sauvegardais la
-  partie sur disque et la rechargeais, est-ce que `Game` suffirait ? `dt`, l'accumulateur du fixed
-  timestep et la police de caractères n'en font pas partie : ils appartiennent à la boucle ou au rendu.
+- **`Game` contient tout l'état de partie, plus les intentions du tour en cours — et rien d'autre.**
+  Critère de tri pour l'état : si je sauvegardais la partie sur disque et la rechargeais, est-ce que
+  `Game` suffirait ? `dt`, l'accumulateur du fixed timestep et la police de caractères n'en font pas
+  partie : ils appartiennent à la boucle ou au rendu.
+  **Exception assumée (2026-09-11) : les intentions.** `left_paddle_move_dir` / `right_paddle_move_dir`
+  vivent dans `Game` pour que `integrate` les lise sans paramètre supplémentaire. Ce ne sont **pas**
+  de l'état — elles ne passent pas le critère de sauvegarde. Contrat qui en découle : **l'appelant
+  réécrit les deux intentions avant chaque série de pas** (chaque image dans `main`, chaque scénario
+  dans un test), y compris à 0 quand aucune touche n'est enfoncée. Rien dans la simulation ne le
+  garantit : si la remise à zéro disparaît de `main`, une raquette continue de monter après qu'on a
+  relâché W, parce que le `else if` n'écrit rien quand aucune touche n'est enfoncée.
 - **Le debug lit, il ne calcule rien et ne stocke rien.** Aucune valeur n'entre dans une entité pour
   être affichée. Le jour où supprimer l'overlay change le comportement du jeu, c'est perdu.
 - **`ViewPort` décrit la projection monde→écran, pas le monde.** L'overlay se dessine en pixels bruts —
@@ -304,6 +312,8 @@ Rejoué sur le code du commit `9e39c9f` + correction n°1, ancien prédicat, raq
 | 60 | −60° … +60° | **0 collage** |
 | 240 | −60° … +60° | **23 972 sur 24 000** — bloquée pour de bon |
 | 240 | −60° … +60°, prédicat corrigé | 2 |
+| 100 (`FIXED_DT` = 0.01) | −60° … +60° | **9 884 sur 10 000** — bloquée pour de bon |
+| 100 (`FIXED_DT` = 0.01) | −60° … +60°, prédicat corrigé | 2 |
 
 Calcul direct (raquette collée en haut, y = 25 ; profondeur = rayon − `ball.y`) : collage
 possible si profondeur < pas d'entrée **et** profondeur > pas de sortie, avec
@@ -314,14 +324,25 @@ pour qu'une fenêtre existe :
 |---|---|
 | 30 | impossible (le pas de sortie dépasse toujours le rayon) |
 | 60 | 0.8624 — quasi l'angle max, fenêtre en y de 0.1566 à 0.1784 |
+| 100 (`FIXED_DT` = 0.01) | 0.8124 — soit un angle ≥ 54°, courant en jeu |
 | 240 | 0.768 — courant en jeu |
 
 **Le bug dépendait donc de la fréquence d'image** : inexistant à 30 fps, quasi inatteignable à 60,
 systématique à 240. C'est exactement le genre d'écart que le jalon 5 doit rendre impossible.
 
-**Conséquence pour le test à écrire :** à 60 fps avec des angles réalistes, un test d'invariant ne
+~~**Conséquence pour le test à écrire :** à 60 fps avec des angles réalistes, un test d'invariant ne
 peut **pas** détecter la suppression de la condition de direction. Il doit tourner à `dt` = 1/240
-(ou partir d'angles hors plage, mais alors il teste un état que le jeu n'atteint pas).
+(ou partir d'angles hors plage, mais alors il teste un état que le jeu n'atteint pas).~~
+
+**Correction du 2026-09-11 (après le commit `7e2b17d`, fixed timestep) — la note barrée est
+dépassée.** Elle raisonnait avec un `dt` qui dépendait des fps. Le jeu tourne désormais **toujours**
+à `FIXED_DT` = 0.01 : un test à 1/240 testerait un pas que le jeu n'exécute jamais. À 0.01, le
+collage est atteignable avec des angles réalistes (‖vy‖ ≥ 0.8124, balayage ci-dessus : 9 884 pas
+bloqués sur 10 000 avec l'ancien prédicat, 2 au plus avec le corrigé). **Le test d'invariant doit
+donc tourner à `FIXED_DT`**, le `dt` réel du jeu, et partir d'angles dans ±60°. Il ne détectera la
+suppression de la condition de direction que s'il couvre un scénario qui déclenche le collage
+(frappe au bord d'une raquette collée en haut ou en bas, ‖vy‖ d'entrée ≥ 0.81) : un seul scénario
+pris au hasard ne suffit pas, le balayage ci-dessus en est la preuve.
 
 **Ce correctif n'a aucun filet.** `tests` ne fait jamais tourner `HandleBallPaddleCollision` : on peut
 supprimer la condition de direction, la suite affiche SUCCESS. C'est le prochain test à écrire, et

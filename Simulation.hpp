@@ -19,6 +19,7 @@ void	HandleBallWallCollision(Game& game);
 void	UpdatePaddle(Paddle& paddle, float dt, int move_dir);
 void	UpdateBall(Game& game, float dt);
 
+void	DetectCollisions(Game& game);
 void	integrate(Game& game, float dt);
 
 #endif

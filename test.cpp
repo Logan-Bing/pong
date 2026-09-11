@@ -191,6 +191,5 @@ int	TestFixedDt()
 
 int main()
 {
-	TestFixedDt();
-	// return (TestElapsedTime() || TestFloorCeilingCollision());
+	return (TestElapsedTime() || TestFloorCeilingCollision());
 }

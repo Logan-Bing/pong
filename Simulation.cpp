@@ -82,6 +82,14 @@ void	UpdateBall(Game& game, float dt)
 	game.ball.bot_border = game.ball.y + game.ball.radius;
 }
 
+void	DetectCollisions(Game& game)
+{
+	HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
+	HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
+	HandleCeilingFloorCollision(game.ball);
+	HandleBallWallCollision(game);
+}
+
 void	integrate(Game& game, float dt)
 {
 		UpdatePaddle(game.left_paddle, dt, game.left_paddle_move_dir);

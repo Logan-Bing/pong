@@ -31,29 +31,24 @@ int main()
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
 
-		game.left_paddle_move_dir = 0;
-		game.right_paddle_move_dir = 0;
-
 		if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
 		else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
+		else game.left_paddle_move_dir = 0;
 
 		if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
 		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
+		else game.right_paddle_move_dir = 0;
 
 		accumulator += frameTime;
+		if (frameTime >= 0.25) frameTime = 0.25;
 
 		// update
 		while (accumulator >= FIXED_DT)
 		{
-			HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
-			HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
-			HandleCeilingFloorCollision(game.ball);
-			HandleBallWallCollision(game);
-
+			DetectCollisions(game);
 			integrate(game, FIXED_DT);
 			accumulator -= FIXED_DT;
 		}
-
 
 		// draw
 		BeginDrawing();
@@ -70,7 +65,7 @@ int main()
 
 			// OVERLAY
 			if (IsKeyDown(KEY_TAB))
-				Render::DrawOverlay(game, FIXED_DT, font);
+				Render::DrawOverlay(game, frameTime, font);
 
 		EndDrawing();
 	}
