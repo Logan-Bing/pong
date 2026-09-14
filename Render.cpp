@@ -4,7 +4,6 @@
 #include <raylib.h>
 #include <string>
 
-
 constexpr int	INT(float v)
 {
 	return static_cast<int>(v);
