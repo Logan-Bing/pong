@@ -17,6 +17,7 @@ class Game
 
 	  Game();
 	  void	setBallService();
+	  bool operator==(const Game& rhs) const;
 };
 
 #endif

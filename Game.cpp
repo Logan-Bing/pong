@@ -52,3 +52,8 @@ void	Game::setBallService()
 	ball.vx = serve_dir;
 	ball.vy = 0;
 }
+
+bool Game::operator==(const Game& rhs) const
+{
+	return ball.x == rhs.ball.x && ball.y == rhs.ball.y;
+}

@@ -1,7 +1,9 @@
+#include <cassert>
 #include <cctype>
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Game.hpp"
 #include "Simulation.hpp"
 #include "utils.hpp"
 #include "Element.hpp"
@@ -189,7 +191,59 @@ int	TestFixedDt()
 	return 0;
 }
 
+int	TestFPSDependence()
+{
+	struct Data {
+		Game game;
+		float frameTime;
+		float accumulator;
+		int imagePerBloc;
+	};
+
+	PrintTestTilte("FPS DEPENDENCE");
+
+	int blocs = 0;
+	Data fps_30 {.game = Game(), .frameTime = 1.0f / 30, .accumulator = 0, .imagePerBloc = 3}; // 0.0333s
+	Data fps_60 {.game = Game(), .frameTime = 1.0f / 60, .accumulator = 0, .imagePerBloc = 6}; // 0.0167s
+	Data fps_200 {.game = Game(), .frameTime = 1.0f / 200, .accumulator = 0, .imagePerBloc = 20}; // 0.005s
+
+	Data data_tab[3] = {fps_30, fps_60, fps_200};
+
+	while (blocs < 600)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			data_tab[i].game.left_paddle_move_dir = 0;
+			data_tab[i].game.right_paddle_move_dir = 0;
+
+			for (int j = 0; j < data_tab[i].imagePerBloc; j++)
+			{
+				RunSimulation(data_tab[i].game, data_tab[i].frameTime, data_tab[i].accumulator);
+			}
+		}
+		blocs++;
+		// compare blocks
+		int is_equal = 0;
+		if (data_tab[0].game == data_tab[1].game && data_tab[1].game == data_tab[2].game)
+			is_equal = 1;
+		if (!is_equal)
+		{
+			std::cout << RED << "FAILED: " << "blocs: " << blocs << RESET << std::endl;
+			for (int i = 0; i < 3; i++)
+			{
+				std::cout << i << ". " << "X: " << data_tab[i].game.ball.x << " Y: " << data_tab[i].game.ball.y << std::endl;
+				return 1;
+			}
+		}
+	}
+
+	std::cout << GREEN << "SUCCESS" << RESET << std::endl;
+	return 0;
+}
+
 int main()
 {
-	return (TestElapsedTime() || TestFloorCeilingCollision());
+	assert(TestElapsedTime() == 0);
+	assert(TestFloorCeilingCollision() == 0);
+	assert(TestFPSDependence() == 0);
 }

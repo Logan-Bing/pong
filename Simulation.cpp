@@ -60,7 +60,7 @@ void	HandleBallWallCollision(Game& game)
 void	UpdatePaddle(Paddle& paddle, float dt, int move_dir)
 {
 	float new_y = paddle.y - (dt * paddle.speed * move_dir);
-	
+
 	paddle.y = std::clamp(new_y, paddle.height / 2, WORLD_HEIGHT - (paddle.height / 2));
 	paddle.top_border = paddle.y - (paddle.height / 2);
 	paddle.bot_border = paddle.y + (paddle.height / 2);
