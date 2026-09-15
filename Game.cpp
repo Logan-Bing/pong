@@ -1,6 +1,8 @@
 #include "Game.hpp"
+#include "MenuState.hpp"
 
 Game::Game():
+	state(&IGameState::menu),
 	left_paddle
 	({
 		.left_border = 	BASE_PADDLE_LEFT_BORDER_LEFT,
@@ -51,6 +53,16 @@ void	Game::setBallService()
 	ball.y = BASE_BALL_Y;
 	ball.vx = serve_dir;
 	ball.vy = 0;
+}
+
+void	Game::HandleInput(KeyboardKey key)
+{
+	state->HandleInput(*this, key);
+}
+
+void	Game::render()
+{
+	state->render();
 }
 
 bool Game::operator==(const Game& rhs) const

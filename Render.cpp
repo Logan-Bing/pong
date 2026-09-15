@@ -13,8 +13,8 @@ void	Render::DrawBorder(ViewPort& view)
 {
 	DrawRectangle(0, 0, INT(view.screenW), INT(view.offsetY), GRAY);
 	DrawRectangle(0,INT(view.offsetY + WORLD_HEIGHT * view.ratio), INT(view.screenW), INT(view.offsetY), GRAY);
-	DrawRectangle(0, 0,INT(view.offsetX), INT(view.screenH), GRAY);
-	DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
+	// DrawRectangle(0, 0,INT(view.offsetX), INT(view.screenH), GRAY);
+	// DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
 }
 
 void	Render::DrawBall(ViewPort& view, Game& game)
@@ -38,6 +38,12 @@ void	Render::DrawPaddle(ViewPort& view, Paddle& paddle)
 			INT(view.scaleView(paddle.height)),
 			BLACK
 		);
+}
+
+void	Render::DrawMenu()
+{
+	DrawRectangle(0, 0, SCREEN_W, SCREEN_H, BLACK);
+	DrawText("Press enter to start the game", SCREEN_W / 2, SCREEN_H / 2, 20, WHITE);
 }
 
 std::string	GetOverlayInfos(Game& game, float dt)

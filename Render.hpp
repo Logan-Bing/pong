@@ -17,6 +17,7 @@ namespace Render
 	  void	DrawBall(ViewPort& view, Game& game);
 	  void	DrawPaddle(ViewPort& view, Paddle& paddle);
 	  void	DrawOverlay(Game& game, float dt, Font& font);
+	  void	DrawMenu();
 };
 
 std::string	GetOverlayInfos(Game& game, float dt);

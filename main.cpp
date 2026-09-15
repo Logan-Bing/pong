@@ -31,6 +31,7 @@ int main()
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
 
+
 		if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
 		else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
 		else game.left_paddle_move_dir = 0;
