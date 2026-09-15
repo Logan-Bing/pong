@@ -96,22 +96,3 @@ void	Integrate(Game& game, float dt)
 		UpdatePaddle(game.right_paddle, dt, game.right_paddle_move_dir);
 		UpdateBall(game, dt);
 }
-
-void	StepSimulation(Game& game)
-{
-	ResolveCollisions(game);
-	Integrate(game, FIXED_DT);
-}
-
-void	RunSimulation(Game& game, float frameTime, float& accumulator)
-{
-	frameTime = std::min(frameTime, FRAMETIME_LIMIT);
-
-	accumulator += frameTime;
-	// update
-	while (accumulator >= FIXED_DT)
-	{
-		StepSimulation(game);
-		accumulator -= FIXED_DT;
-	}
-}

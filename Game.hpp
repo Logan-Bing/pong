@@ -2,6 +2,7 @@
 #define __GAME_HPP__
 
 #include "Element.hpp"
+#include "ViewPort.hpp"
 #include <raylib.h>
 
 class IGameState;
@@ -22,7 +23,8 @@ class Game
 	  Game();
 	  void	setBallService();
 	  void	HandleInput(KeyboardKey key);
-	  void	render();
+	  void	FixedUpdate(float deltatime);
+	  void	render(ViewPort& view);
 	  bool operator==(const Game& rhs) const;
 };
 

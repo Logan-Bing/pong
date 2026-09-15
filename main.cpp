@@ -1,3 +1,4 @@
+#include "Render.hpp"
 #include "Simulation.hpp"
 #include "header.hpp"
 #include <raylib.h>
@@ -26,38 +27,36 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		float frameTime = GetFrameTime();
 		view.screenW = GetScreenWidth();
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
 
+		float frameTime = GetFrameTime();
+		frameTime = std::min(frameTime, FRAMETIME_LIMIT);
 
-		if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
-		else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
-		else game.left_paddle_move_dir = 0;
+		accumulator += frameTime;
 
-		if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
-		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
-		else game.right_paddle_move_dir = 0;
+		while (accumulator >= FIXED_DT)
+		{
+			game.FixedUpdate(FIXED_DT);
+			accumulator -= FIXED_DT;
+		}
 
-		RunSimulation(game, frameTime, accumulator);
+		KeyboardKey current_key = static_cast<KeyboardKey>(GetKeyPressed());
+
+		if (current_key != 0)
+			game.HandleInput(current_key);
 
 		// draw
 		BeginDrawing();
 
 			ClearBackground(WHITE);
 
-			// Draw Border
-			Render::DrawBorder(view);
-
-			// Draw element
-			Render::DrawBall(view, game);
-			Render::DrawPaddle(view, game.left_paddle);
-			Render::DrawPaddle(view, game.right_paddle);
+			game.render(view);
 
 			// OVERLAY
-			if (IsKeyDown(KEY_TAB))
-				Render::DrawOverlay(game, frameTime, font);
+			// if (IsKeyDown(KEY_TAB))
+			// 	Render::DrawOverlay(game, frameTime, font);
 
 		EndDrawing();
 	}

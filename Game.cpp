@@ -1,5 +1,7 @@
 #include "Game.hpp"
 #include "MenuState.hpp"
+#include "InSimulationState.hpp"
+#include "ViewPort.hpp"
 
 Game::Game():
 	state(&IGameState::menu),
@@ -60,9 +62,14 @@ void	Game::HandleInput(KeyboardKey key)
 	state->HandleInput(*this, key);
 }
 
-void	Game::render()
+void	Game::FixedUpdate(float deltatime)
 {
-	state->render();
+	state->FixedUpdate(*this, deltatime);
+}
+
+void	Game::render(ViewPort& view)
+{
+	state->render(*this, view);
 }
 
 bool Game::operator==(const Game& rhs) const

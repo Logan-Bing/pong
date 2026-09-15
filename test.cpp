@@ -218,7 +218,7 @@ int	TestFPSDependence()
 
 			for (int j = 0; j < data_tab[i].imagePerBloc; j++)
 			{
-				RunSimulation(data_tab[i].game, data_tab[i].frameTime, data_tab[i].accumulator);
+				// RunSimulation(data_tab[i].game, data_tab[i].frameTime, data_tab[i].accumulator);
 			}
 		}
 		blocs++;

@@ -40,6 +40,17 @@ void	Render::DrawPaddle(ViewPort& view, Paddle& paddle)
 		);
 }
 
+void	Render::DrawGame(Game& game, ViewPort& view)
+{
+	// Draw Border
+	Render::DrawBorder(view);
+
+	// Draw element
+	Render::DrawBall(view, game);
+	Render::DrawPaddle(view, game.left_paddle);
+	Render::DrawPaddle(view, game.right_paddle);
+}
+
 void	Render::DrawMenu()
 {
 	DrawRectangle(0, 0, SCREEN_W, SCREEN_H, BLACK);

@@ -23,7 +23,4 @@ void	UpdateBall(Game& game, float dt);
 void	ResolveCollisions(Game& game);
 void	Integrate(Game& game, float dt);
 
-void	StepSimulation(Game& game);
-void	RunSimulation(Game& game, float frameTime, float& accumulator);
-
 #endif

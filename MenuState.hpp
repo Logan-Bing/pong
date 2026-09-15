@@ -7,8 +7,10 @@
 class MenuState: public IGameState
 {
 	public:
+		~MenuState();
 		void HandleInput(Game &game, KeyboardKey key) override;
-		void render() override;
+		void FixedUpdate(Game& game, float deltatime) override;
+		void render(Game& game, ViewPort& view) override;
 };
 
 #endif
