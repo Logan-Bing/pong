@@ -1,3 +1,4 @@
+#include "Element.hpp"
 #include "Render.hpp"
 #include "Simulation.hpp"
 #include "header.hpp"
@@ -42,7 +43,7 @@ int main()
 			accumulator -= FIXED_DT;
 		}
 
-		KeyboardKey current_key = static_cast<KeyboardKey>(GetKeyPressed());
+		Input current_key = static_cast<Input>(GetKeyPressed());
 
 		if (current_key != 0)
 			game.HandleInput(current_key);

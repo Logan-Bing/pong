@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include "ViewPort.hpp"
+#include "raylib.h"
 
 // (X, Y) défini le centre d'un objet
 
@@ -49,6 +50,12 @@ struct Ball {
 	float radius;
 	float speed;
 };
+
+typedef enum
+{
+	TOGGLE_PAUSE = KEY_TAB,
+	ENTER = KEY_ENTER
+} Input;
 
 int	checkBallPaddleCollision(Ball& b, Paddle& p);
 

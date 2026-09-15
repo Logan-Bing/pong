@@ -1,20 +1,15 @@
 #include "InSimulationState.hpp"
-#include "MenuState.hpp"
-#include "Render.hpp"
-#include "Simulation.hpp"
-#include "ViewPort.hpp"
-#include <raylib.h>
+#include "PauseState.hpp"
 
 InSimulationState IGameState::in_simulation;
 
 InSimulationState::~InSimulationState(){}
 
-void InSimulationState::HandleInput(Game &game, KeyboardKey key)
+void InSimulationState::HandleInput(Game &game, Input input)
 {
-	if (key == KEY_TAB)
+	if (input == TOGGLE_PAUSE)
 	{
-		// Changer par le menu pause
-		game.state = &IGameState::menu;
+		game.state = &IGameState::pause;
 	}
 }
 

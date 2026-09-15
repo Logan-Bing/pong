@@ -57,6 +57,12 @@ void	Render::DrawMenu()
 	DrawText("Press enter to start the game", SCREEN_W / 2, SCREEN_H / 2, 20, WHITE);
 }
 
+void	Render::DrawPause(Game &game, ViewPort& view)
+{
+	Render::DrawGame(game, view);
+	DrawRectangle(0, 0, SCREEN_W, SCREEN_H, Fade(BLACK, 0.2f));
+}
+
 std::string	GetOverlayInfos(Game& game, float dt)
 {
 	std::string infos;

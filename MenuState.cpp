@@ -5,9 +5,9 @@ MenuState IGameState::menu;
 
 MenuState::~MenuState(){}
 
-void MenuState::HandleInput(Game& game, KeyboardKey key)
+void MenuState::HandleInput(Game& game, Input input)
 {
-	if (key == KEY_ENTER)
+	if (input == ENTER)
 	{
 		game.state = &IGameState::in_simulation;
 	}

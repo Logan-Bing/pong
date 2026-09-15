@@ -57,9 +57,9 @@ void	Game::setBallService()
 	ball.vy = 0;
 }
 
-void	Game::HandleInput(KeyboardKey key)
+void	Game::HandleInput(Input input)
 {
-	state->HandleInput(*this, key);
+	state->HandleInput(*this, input);
 }
 
 void	Game::FixedUpdate(float deltatime)

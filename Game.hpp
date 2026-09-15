@@ -22,7 +22,7 @@ class Game
 
 	  Game();
 	  void	setBallService();
-	  void	HandleInput(KeyboardKey key);
+	  void	HandleInput(Input input);
 	  void	FixedUpdate(float deltatime);
 	  void	render(ViewPort& view);
 	  bool operator==(const Game& rhs) const;

@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
 	ViewPort.cpp
 	InSimulationState.cpp
 	MenuState.cpp
+	PauseState.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wconversion)
