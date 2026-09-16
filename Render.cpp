@@ -14,8 +14,8 @@ void	Render::DrawBorder(ViewPort& view)
 {
 	DrawRectangle(0, 0, INT(view.screenW), INT(view.offsetY), GRAY);
 	DrawRectangle(0,INT(view.offsetY + WORLD_HEIGHT * view.ratio), INT(view.screenW), INT(view.offsetY), GRAY);
-	// DrawRectangle(0, 0,INT(view.offsetX), INT(view.screenH), GRAY);
-	// DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
+	DrawRectangle(0, 0,INT(view.offsetX), INT(view.screenH), GRAY);
+	DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
 }
 
 void	Render::DrawBall(ViewPort& view, PhysicsState& state)
@@ -56,10 +56,10 @@ void	Render::DrawGame(ViewPort& view, PhysicsState& state)
 	Render::DrawPaddle(view, state);
 }
 
-void	Render::DrawMenu()
+void	Render::DrawMenu(ViewPort& view)
 {
-	DrawRectangle(0, 0, INT(SCREEN_W), INT(SCREEN_H), BLACK);
-	DrawText("Press enter to start the game", INT(SCREEN_W / 2), INT(SCREEN_H / 2), 20, WHITE);
+	DrawRectangle(0, 0, INT(view.screenW), INT(view.screenH), BLACK);
+	DrawText("Press enter to start the game", INT(view.screenW / 2), INT(view.screenH / 2), 20, WHITE);
 }
 
 void	Render::DrawPause(ViewPort& view, PhysicsState& state)

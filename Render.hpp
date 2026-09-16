@@ -20,7 +20,7 @@ namespace Render
 
 	  void	DrawOverlay(PhysicsState& state, float dt, Font& font);
 
-	  void	DrawMenu();
+	  void	DrawMenu(ViewPort& view);
 	  void	DrawPause(ViewPort& view, PhysicsState& state);
 };
 

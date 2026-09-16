@@ -22,6 +22,5 @@ void MenuState::FixedUpdate(Game& game, float deltatime)
 void	MenuState::render(ViewPort& view, PhysicsState& state)
 {
 	(void)state;
-	(void)view;
-	Render::DrawMenu();
+	Render::DrawMenu(view);
 }

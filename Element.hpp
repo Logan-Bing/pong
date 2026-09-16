@@ -8,7 +8,7 @@
 // (X, Y) défini le centre d'un objet
 
 constexpr float BASE_BALL_SPEED = 350.0f;
-constexpr float BASE_BALL_RADIUS = WORLD_HEIGHT / 48;
+constexpr float BASE_BALL_RADIUS = WORLD_HEIGHT / 56;
 constexpr float BASE_BALL_X = (WORLD_WIDTH / 2);
 constexpr float BASE_BALL_Y = (WORLD_HEIGHT / 2);
 constexpr float BASE_BALL_LEFT_BORDER = BASE_BALL_X - BASE_BALL_RADIUS;
