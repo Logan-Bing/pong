@@ -15,14 +15,6 @@ void InSimulationState::HandleInput(Game &game, Input input)
 
 void InSimulationState::FixedUpdate(Game& game, float deltatime)
 {
-	if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
-	else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
-	else game.left_paddle_move_dir = 0;
-
-	if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
-	else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
-	else game.right_paddle_move_dir = 0;
-
 	ResolveCollisions(game);
 	Integrate(game, deltatime);
 }

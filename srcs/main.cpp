@@ -51,6 +51,14 @@ int main()
 		view.screenH = GetScreenHeight();
 		view.UpdateRatioWorldScreen();
 
+		if (IsKeyDown(KEY_W)) game.left_paddle_move_dir = 1;
+		else if (IsKeyDown(KEY_S)) game.left_paddle_move_dir = -1;
+		else game.left_paddle_move_dir = 0;
+
+		if (IsKeyDown(KEY_UP)) game.right_paddle_move_dir = 1;
+		else if (IsKeyDown(KEY_DOWN)) game.right_paddle_move_dir = -1;
+		else game.right_paddle_move_dir = 0;
+
 		float frameTime = GetFrameTime();
 		frameTime = std::min(frameTime, FRAMETIME_LIMIT);
 
