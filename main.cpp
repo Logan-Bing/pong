@@ -53,7 +53,7 @@ int main()
 
 			ClearBackground(WHITE);
 
-			game.render(view);
+			game.render(view, game.current_state);
 
 			// OVERLAY
 			// if (IsKeyDown(KEY_TAB))

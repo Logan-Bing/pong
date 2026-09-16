@@ -1,47 +1,54 @@
 #include "Game.hpp"
+#include "Element.hpp"
 #include "MenuState.hpp"
 #include "InSimulationState.hpp"
 #include "ViewPort.hpp"
 
 Game::Game():
 	state(&IGameState::menu),
-	left_paddle
-	({
-		.left_border = 	BASE_PADDLE_LEFT_BORDER_LEFT,
-		.right_border = BASE_PADDLE_LEFT_BORDER_RIGHT,
-		.top_border =	BASE_PADDLE_TOP_BORDER,
-		.bot_border =	BASE_PADDLE_BOT_BORDER,
-		.x	=			BASE_PADDLE_LEFT_X,
-		.y =			BASE_PADDLE_Y,
-		.width =		BASE_PADDLE_WIDTH,
-		.height =	BASE_PADDLE_HEIGHT,
-		.speed	=	BASE_PADDLE_SPEED
-	}),
-	right_paddle
-	({
-		.left_border = 	BASE_PADDLE_RIGHT_BORDER_LEFT,
-		.right_border = BASE_PADDLE_RIGHT_BORDER_RIGHT,
-		.top_border =	BASE_PADDLE_TOP_BORDER,
-		.bot_border =	BASE_PADDLE_BOT_BORDER,
-		.x	=			BASE_PADDLE_RIGHT_X,
-		.y =			BASE_PADDLE_Y,
-		.width =		BASE_PADDLE_WIDTH,
-		.height =	BASE_PADDLE_HEIGHT,
-		.speed	=	BASE_PADDLE_SPEED
-	}),
-	ball
-	({
-		.left_border = BASE_BALL_LEFT_BORDER,
-		.right_border = BASE_BALL_RIGHT_BORDER,
-		.top_border = BASE_BALL_TOP_BORDER,
-		.bot_border = BASE_BALL_BOT_BORDER,
-		.x =		BASE_BALL_X,
-		.y = 		BASE_BALL_Y,
-		.vx =		1,
-		.vy =		0,
-		.radius =	BASE_BALL_RADIUS,
-		.speed =	BASE_BALL_SPEED
-	}),
+	current_state
+	(
+		{
+			 .left_paddle = 
+			{
+				.left_border = 	BASE_PADDLE_LEFT_BORDER_LEFT,
+				.right_border = BASE_PADDLE_LEFT_BORDER_RIGHT,
+				.top_border =	BASE_PADDLE_TOP_BORDER,
+				.bot_border =	BASE_PADDLE_BOT_BORDER,
+				.x	=			BASE_PADDLE_LEFT_X,
+				.y =			BASE_PADDLE_Y,
+				.width =		BASE_PADDLE_WIDTH,
+				.height =	BASE_PADDLE_HEIGHT,
+				.speed	=	BASE_PADDLE_SPEED
+			},
+			.right_paddle = 
+			{
+				.left_border = 	BASE_PADDLE_RIGHT_BORDER_LEFT,
+				.right_border = BASE_PADDLE_RIGHT_BORDER_RIGHT,
+				.top_border =	BASE_PADDLE_TOP_BORDER,
+				.bot_border =	BASE_PADDLE_BOT_BORDER,
+				.x	=			BASE_PADDLE_RIGHT_X,
+				.y =			BASE_PADDLE_Y,
+				.width =		BASE_PADDLE_WIDTH,
+				.height =	BASE_PADDLE_HEIGHT,
+				.speed	=	BASE_PADDLE_SPEED
+			},
+			.ball = 
+			{
+				.left_border = BASE_BALL_LEFT_BORDER,
+				.right_border = BASE_BALL_RIGHT_BORDER,
+				.top_border = BASE_BALL_TOP_BORDER,
+				.bot_border = BASE_BALL_BOT_BORDER,
+				.x =		BASE_BALL_X,
+				.y = 		BASE_BALL_Y,
+				.vx =		1,
+				.vy =		0,
+				.radius =	BASE_BALL_RADIUS,
+				.speed =	BASE_BALL_SPEED
+			}
+		}
+	),
+	previous_state(current_state),
 	serve_dir(1.0f),
 	left_paddle_move_dir(0),
 	right_paddle_move_dir(0),
@@ -51,10 +58,10 @@ Game::Game():
 
 void	Game::setBallService()
 {
-	ball.x = BASE_BALL_X;
-	ball.y = BASE_BALL_Y;
-	ball.vx = serve_dir;
-	ball.vy = 0;
+	current_state.ball.x = BASE_BALL_X;
+	current_state.ball.y = BASE_BALL_Y;
+	current_state.ball.vx = serve_dir;
+	current_state.ball.vy = 0;
 }
 
 void	Game::HandleInput(Input input)
@@ -67,12 +74,12 @@ void	Game::FixedUpdate(float deltatime)
 	state->FixedUpdate(*this, deltatime);
 }
 
-void	Game::render(ViewPort& view)
+void	Game::render(ViewPort& view, PhysicsState& physics_state)
 {
-	state->render(*this, view);
+	state->render(view, physics_state);
 }
 
 bool Game::operator==(const Game& rhs) const
 {
-	return ball.x == rhs.ball.x && ball.y == rhs.ball.y;
+	return current_state.ball.x == rhs.current_state.ball.x && current_state.ball.y == rhs.current_state.ball.y;
 }

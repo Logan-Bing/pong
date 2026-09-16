@@ -19,7 +19,7 @@ void PauseState::FixedUpdate(Game& game, float deltatime)
 	(void)deltatime;
 }
 
-void PauseState::render(Game& game, ViewPort& view)
+void PauseState::render(ViewPort& view, PhysicsState& state)
 {
-	Render::DrawPause(game, view);
+	Render::DrawPause(view, state);
 }

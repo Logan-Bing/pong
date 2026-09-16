@@ -19,9 +19,9 @@ void MenuState::FixedUpdate(Game& game, float deltatime)
 	(void)deltatime;
 }
 
-void	MenuState::render(Game& game, ViewPort& view)
+void	MenuState::render(ViewPort& view, PhysicsState& state)
 {
-	(void)game;
+	(void)state;
 	(void)view;
 	Render::DrawMenu();
 }

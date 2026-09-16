@@ -9,7 +9,7 @@ class PauseState: public IGameState
 		~PauseState(void);
 		void HandleInput(Game& game, Input input);
 		void FixedUpdate(Game& game, float deltatime);
-		void render(Game& game, ViewPort& view);
+		void render(ViewPort& view, PhysicsState& state);
 };
 
 #endif

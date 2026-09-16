@@ -40,7 +40,7 @@ void	HandleCeilingFloorCollision(Ball& ball)
 
 int	CheckBallWallCollision(Game& game)
 {
-	return (game.ball.left_border <= 0 || game.ball.right_border >= WORLD_WIDTH);
+	return (game.current_state.ball.left_border <= 0 || game.current_state.ball.right_border >= WORLD_WIDTH);
 }
 
 void	HandleBallWallCollision(Game& game)
@@ -74,25 +74,25 @@ void	UpdateBall(Game& game, float dt)
 		game.reset = 0;
 	}
 
-	game.ball.x += dt * game.ball.speed * game.ball.vx;
-	game.ball.y += dt * game.ball.speed * game.ball.vy;
-	game.ball.left_border = game.ball.x - game.ball.radius;
-	game.ball.right_border = game.ball.x + game.ball.radius;
-	game.ball.top_border = game.ball.y - game.ball.radius;
-	game.ball.bot_border = game.ball.y + game.ball.radius;
+	game.current_state.ball.x += dt * game.current_state.ball.speed * game.current_state.ball.vx;
+	game.current_state.ball.y += dt * game.current_state.ball.speed * game.current_state.ball.vy;
+	game.current_state.ball.left_border = game.current_state.ball.x - game.current_state.ball.radius;
+	game.current_state.ball.right_border = game.current_state.ball.x + game.current_state.ball.radius;
+	game.current_state.ball.top_border = game.current_state.ball.y - game.current_state.ball.radius;
+	game.current_state.ball.bot_border = game.current_state.ball.y + game.current_state.ball.radius;
 }
 
 void	ResolveCollisions(Game& game)
 {
-	HandleBallPaddleCollision(game.ball, game.left_paddle, 1);
-	HandleBallPaddleCollision(game.ball, game.right_paddle, -1);
-	HandleCeilingFloorCollision(game.ball);
+	HandleBallPaddleCollision(game.current_state.ball, game.current_state.left_paddle, 1);
+	HandleBallPaddleCollision(game.current_state.ball, game.current_state.right_paddle, -1);
+	HandleCeilingFloorCollision(game.current_state.ball);
 	HandleBallWallCollision(game);
 }
 
 void	Integrate(Game& game, float dt)
 {
-		UpdatePaddle(game.left_paddle, dt, game.left_paddle_move_dir);
-		UpdatePaddle(game.right_paddle, dt, game.right_paddle_move_dir);
+		UpdatePaddle(game.current_state.left_paddle, dt, game.left_paddle_move_dir);
+		UpdatePaddle(game.current_state.right_paddle, dt, game.right_paddle_move_dir);
 		UpdateBall(game, dt);
 }

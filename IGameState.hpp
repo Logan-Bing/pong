@@ -1,6 +1,7 @@
 #ifndef __IGAMESTATE_HPP__
 #define __IGAMESTATE_HPP__
 
+#include "Element.hpp"
 #include "Game.hpp"
 #include "Render.hpp"
 #include "Simulation.hpp"
@@ -20,7 +21,7 @@ class IGameState
 		virtual ~IGameState(){} ;
 		virtual void HandleInput(Game& game, Input input) = 0;
 		virtual void FixedUpdate(Game& game, float deltatime) = 0;
-		virtual void render(Game& game, ViewPort& view) = 0;
+		virtual void render(ViewPort& view, PhysicsState& state) = 0;
 };
 
 #endif

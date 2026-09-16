@@ -27,7 +27,7 @@ void InSimulationState::FixedUpdate(Game& game, float deltatime)
 	Integrate(game, deltatime);
 }
 
-void InSimulationState::render(Game& game, ViewPort& view)
+void InSimulationState::render(ViewPort& view, PhysicsState& state)
 {
-	Render::DrawGame(game, view);
+	Render::DrawGame(view, state);
 }

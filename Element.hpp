@@ -31,9 +31,10 @@ constexpr float BASE_PADDLE_RIGHT_X = WORLD_WIDTH - BASE_PADDLE_LEFT_X;
 constexpr float BASE_PADDLE_RIGHT_BORDER_LEFT = BASE_PADDLE_RIGHT_X - (BASE_PADDLE_WIDTH / 2);
 constexpr float BASE_PADDLE_RIGHT_BORDER_RIGHT = BASE_PADDLE_RIGHT_X + (BASE_PADDLE_WIDTH / 2);
 
-constexpr float ANGLE = 60 * M_PI / 180;
+constexpr float ANGLE = 60 * static_cast<float>(M_PI) / 180;
 
-struct Paddle {
+struct Paddle
+{
 	float left_border, right_border;
 	float top_border, bot_border;
 	float x, y;
@@ -42,13 +43,21 @@ struct Paddle {
 	float speed;
 };
 
-struct Ball {
+struct Ball
+{
 	float left_border, right_border;
 	float top_border, bot_border;
 	float x, y;
 	float vx, vy;
 	float radius;
 	float speed;
+};
+
+struct PhysicsState
+{
+	Paddle	left_paddle;
+	Paddle	right_paddle;
+	Ball	ball;
 };
 
 typedef enum

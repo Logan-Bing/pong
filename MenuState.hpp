@@ -9,7 +9,7 @@ class MenuState: public IGameState
 		~MenuState();
 		void HandleInput(Game &game, Input input) override;
 		void FixedUpdate(Game& game, float deltatime) override;
-		void render(Game& game, ViewPort& view) override;
+		void render(ViewPort& view, PhysicsState& state) override;
 };
 
 #endif
