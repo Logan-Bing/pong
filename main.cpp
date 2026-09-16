@@ -12,6 +12,25 @@
 // 	Player
 //	Bonus
 
+float AlphaCalcul(float current_value, float previous_value, const float alpha)
+{
+	return current_value * alpha + previous_value * (1.0f - alpha);
+}
+
+PhysicsState ApplyAlphaOnState(PhysicsState& current_state, PhysicsState& previous_state,const float alpha)
+{
+	PhysicsState state(current_state);
+
+	state.left_paddle.x = AlphaCalcul(current_state.left_paddle.x, previous_state.left_paddle.x, alpha);
+	state.left_paddle.y = AlphaCalcul(current_state.left_paddle.y, previous_state.left_paddle.y, alpha);
+	state.right_paddle.x = AlphaCalcul(current_state.right_paddle.x, previous_state.right_paddle.x, alpha);
+	state.right_paddle.y = AlphaCalcul(current_state.right_paddle.y, previous_state.right_paddle.y, alpha);
+	state.ball.x = AlphaCalcul(current_state.ball.x, previous_state.ball.x, alpha);
+	state.ball.y = AlphaCalcul(current_state.ball.y, previous_state.ball.y, alpha);
+
+	return state;
+}
+
 int main()
 {
 	// Game init
@@ -39,25 +58,25 @@ int main()
 
 		while (accumulator >= FIXED_DT)
 		{
+			game.previous_state = game.current_state;
 			game.FixedUpdate(FIXED_DT);
 			accumulator -= FIXED_DT;
 		}
 
 		Input current_key = static_cast<Input>(GetKeyPressed());
-
 		if (current_key != 0)
 			game.HandleInput(current_key);
+
+		const float alpha = accumulator / FIXED_DT;
+
+		PhysicsState state = ApplyAlphaOnState(game.current_state, game.previous_state, alpha);
 
 		// draw
 		BeginDrawing();
 
 			ClearBackground(WHITE);
 
-			game.render(view, game.current_state);
-
-			// OVERLAY
-			// if (IsKeyDown(KEY_TAB))
-			// 	Render::DrawOverlay(game, frameTime, font);
+			game.render(view, state);
 
 		EndDrawing();
 	}
