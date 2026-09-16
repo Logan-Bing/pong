@@ -9,24 +9,31 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(raylib REQUIRED)
 
+set(SRCS_DIR srcs)
+set(INC_DIR includes)
+set(UTILS_DIR utils)
+
 add_executable(${PROJECT_NAME} 
-	main.cpp 
-	Game.cpp
-	Render.cpp
-	Simulation.cpp
-	ViewPort.cpp
-	InSimulationState.cpp
-	MenuState.cpp
-	PauseState.cpp
+	${SRCS_DIR}/main.cpp 
+	${SRCS_DIR}/Game.cpp
+	${SRCS_DIR}/Render.cpp
+	${SRCS_DIR}/Simulation.cpp
+	${SRCS_DIR}/ViewPort.cpp
+	${SRCS_DIR}/InSimulationState.cpp
+	${SRCS_DIR}/MenuState.cpp
+	${SRCS_DIR}/PauseState.cpp
+	${SRCS_DIR}/ServiceState.cpp
 )
+target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIR} ${UTILS_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wconversion)
 
 add_executable(tests EXCLUDE_FROM_ALL
-	test.cpp
-	Simulation.cpp
-	Game.cpp
+	${SRCS_DIR}/test.cpp
+	${SRCS_DIR}/Simulation.cpp
+	${SRCS_DIR}/Game.cpp
 )
+target_include_directories(tests PRIVATE ${INC_DIR} ${UTILS_DIR})
 target_compile_options(tests PRIVATE -Wall -g -fsanitize=address)
 target_link_options(tests PRIVATE -fsanitize=address)
 

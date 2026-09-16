@@ -6,6 +6,7 @@
 class PauseState: public IGameState
 {
 	public:
+		float timer = 0;
 		~PauseState(void);
 		void HandleInput(Game& game, Input input);
 		void FixedUpdate(Game& game, float deltatime);

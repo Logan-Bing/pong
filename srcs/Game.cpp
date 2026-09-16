@@ -2,6 +2,7 @@
 #include "Element.hpp"
 #include "MenuState.hpp"
 #include "InSimulationState.hpp"
+#include "ServiceState.hpp"
 #include "ViewPort.hpp"
 
 Game::Game():
@@ -58,6 +59,8 @@ Game::Game():
 
 void	Game::setBallService()
 {
+	IGameState::service.timer = 2.0f;
+	state = &IGameState::service;
 	current_state.ball.x = BASE_BALL_X;
 	current_state.ball.y = BASE_BALL_Y;
 	current_state.ball.vx = serve_dir;

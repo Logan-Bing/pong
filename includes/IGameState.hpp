@@ -10,6 +10,7 @@
 class MenuState;
 class InSimulationState;
 class PauseState;
+class ServiceState;
 
 class IGameState
 {
@@ -17,6 +18,7 @@ class IGameState
 		static	MenuState 			menu;
 		static	InSimulationState	in_simulation;
 		static	PauseState			pause;
+		static	ServiceState		service;
 
 		virtual ~IGameState(){} ;
 		virtual void HandleInput(Game& game, Input input) = 0;
