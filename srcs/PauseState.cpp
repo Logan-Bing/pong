@@ -1,5 +1,7 @@
 #include "PauseState.hpp"
+#include "IGameState.hpp"
 #include "InSimulationState.hpp"
+#include "ServiceState.hpp"
 
 PauseState IGameState::pause;
 
@@ -9,6 +11,11 @@ void PauseState::HandleInput(Game& game, Input input)
 {
 	if (input == TOGGLE_PAUSE)
 	{
+		if (IGameState::service.timer >= 0)
+		{
+			game.state = &IGameState::service;
+			return;
+		}
 		game.state = &IGameState::in_simulation;
 	}
 }

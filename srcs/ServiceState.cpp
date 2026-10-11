@@ -9,8 +9,10 @@ ServiceState::~ServiceState(){}
 
 void ServiceState::HandleInput(Game& game, Input input)
 {
-	(void)game;
-	(void)input;
+	if (input == TOGGLE_PAUSE)
+	{
+		game.state = &IGameState::pause;
+	}
 }
  
 void ServiceState::FixedUpdate(Game& game, float deltatime)
