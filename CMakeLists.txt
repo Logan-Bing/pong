@@ -37,6 +37,9 @@ target_include_directories(tests PRIVATE ${INC_DIR} ${UTILS_DIR})
 target_compile_options(tests PRIVATE -Wall -g -fsanitize=address)
 target_link_options(tests PRIVATE -fsanitize=address)
 
+# Chemin absolu vers assets/ : l'executable les trouve quel que soit le dossier d'ou on le lance
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets")
+
 # Symlink de compile_commands.json a la racine du projet
 add_custom_target(copy_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E create_symlink

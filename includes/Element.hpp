@@ -41,6 +41,16 @@ struct Paddle
 	float width;
 	float height;
 	float speed;
+
+	Rectangle rect;
+
+	const Texture2D* tex;
+
+	void draw() const
+	{
+		Rectangle source = {0, 0, (float)tex->width, (float)tex->height};
+		DrawTexturePro(*tex, source, rect, {0, 0}, 0, WHITE);
+	}
 };
 
 struct Ball

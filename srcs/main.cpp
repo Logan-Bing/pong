@@ -45,6 +45,11 @@ int main()
     SetWindowMinSize(WORLD_WIDTH, WORLD_HEIGHT);
 	SetTargetFPS(FPS);
 
+	// Texture init
+	const Texture2D paddle_tex = LoadTexture(ASSETS_PATH "/Paddle.png");
+	game.current_state.left_paddle.tex = &paddle_tex;
+	game.current_state.right_paddle.tex = &paddle_tex;
+
 	while (!WindowShouldClose())
 	{
 		view.screenW = GetScreenWidth();
@@ -82,12 +87,13 @@ int main()
 		// draw
 		BeginDrawing();
 
-			ClearBackground(WHITE);
+			ClearBackground(GRAY);
 
 			game.render(view, state);
 
 		EndDrawing();
 	}
+	UnloadTexture(paddle_tex);
 	UnloadFont(font);
 	CloseWindow();
 }

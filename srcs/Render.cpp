@@ -31,22 +31,18 @@ void	Render::DrawBall(ViewPort& view, PhysicsState& state)
 
 void	Render::DrawPaddle(ViewPort& view, PhysicsState& state)
 {
-	DrawRectangle
-	(
-		INT(view.scaleXElement(state.left_paddle.x - state.left_paddle.width / 2 )), 
-		INT(view.scaleYElement(state.left_paddle.y - state.left_paddle.height / 2 )), 
-		INT(view.scaleView(state.left_paddle.width)),
-		INT(view.scaleView(state.left_paddle.height)),
-		BLACK
-	);
-	DrawRectangle
-	(
-		INT(view.scaleXElement(state.right_paddle.x - state.right_paddle.width / 2 )), 
-		INT(view.scaleYElement(state.right_paddle.y - state.right_paddle.height / 2 )), 
-		INT(view.scaleView(state.right_paddle.width)),
-		INT(view.scaleView(state.right_paddle.height)),
-		BLACK
-	);
+	state.left_paddle.rect.x = view.scaleXElement(state.left_paddle.left_border);
+	state.left_paddle.rect.y = view.scaleYElement(state.left_paddle.top_border);
+	state.left_paddle.rect.width = view.scaleView(state.left_paddle.width);
+	state.left_paddle.rect.height = view.scaleView(state.left_paddle.height);
+
+	state.right_paddle.rect.x = view.scaleXElement(state.right_paddle.left_border);
+	state.right_paddle.rect.y = view.scaleYElement(state.right_paddle.top_border);
+	state.right_paddle.rect.width = view.scaleView(state.right_paddle.width);
+	state.right_paddle.rect.height = view.scaleView(state.right_paddle.height);
+
+	state.left_paddle.draw();
+	state.right_paddle.draw();
 }
 
 void	Render::DrawGame(ViewPort& view, PhysicsState& state)

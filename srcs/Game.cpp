@@ -4,6 +4,8 @@
 #include "InSimulationState.hpp"
 #include "ServiceState.hpp"
 #include "ViewPort.hpp"
+#include <raylib.h>
+
 
 Game::Game():
 	state(&IGameState::menu),
@@ -20,7 +22,8 @@ Game::Game():
 				.y =			BASE_PADDLE_Y,
 				.width =		BASE_PADDLE_WIDTH,
 				.height =	BASE_PADDLE_HEIGHT,
-				.speed	=	BASE_PADDLE_SPEED
+				.speed	=	BASE_PADDLE_SPEED,
+				.rect = {BASE_PADDLE_LEFT_X, BASE_PADDLE_Y, BASE_PADDLE_WIDTH, BASE_PADDLE_HEIGHT},
 			},
 			.right_paddle = 
 			{
@@ -32,7 +35,8 @@ Game::Game():
 				.y =			BASE_PADDLE_Y,
 				.width =		BASE_PADDLE_WIDTH,
 				.height =	BASE_PADDLE_HEIGHT,
-				.speed	=	BASE_PADDLE_SPEED
+				.speed	=	BASE_PADDLE_SPEED,
+				.rect = {BASE_PADDLE_RIGHT_X, BASE_PADDLE_Y, BASE_PADDLE_WIDTH, BASE_PADDLE_HEIGHT},
 			},
 			.ball = 
 			{
@@ -55,7 +59,8 @@ Game::Game():
 	right_paddle_move_dir(0),
 	serve_count(1),
 	reset(0)
-{}
+{
+}
 
 void	Game::setBallService()
 {
