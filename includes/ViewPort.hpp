@@ -1,6 +1,7 @@
 #ifndef __VIEWPORT_HPP__
 #define __VIEWPORT_HPP__
 
+#include <raylib.h>
 constexpr int FPS = 60;
 constexpr float SCREEN_W = 800.0f;
 constexpr float SCREEN_H = 400.0f;
@@ -37,6 +38,7 @@ class ViewPort
 	float ratio;
 	float offsetX;
 	float offsetY;
+	const Texture2D* bg_tex;
 
   private:
 };

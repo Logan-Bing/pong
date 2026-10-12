@@ -14,6 +14,7 @@ namespace Render
 	   * @brief Draw the border of the world side that's not fully the screen side
 	   */
 	  void	DrawBorder(ViewPort& view);
+	  void	DrawBackground(ViewPort& view);
 	  void	DrawBall(ViewPort& view, PhysicsState& state);
 	  void	DrawPaddle(ViewPort& view, PhysicsState& state);
 	  void	DrawGame(ViewPort& view, PhysicsState& state);

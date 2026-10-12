@@ -18,6 +18,13 @@ void	Render::DrawBorder(ViewPort& view)
 	DrawRectangle(INT(view.offsetX + WORLD_WIDTH * view.ratio), 0, INT(view.offsetX), INT(view.screenH), GRAY);
 }
 
+void	Render::DrawBackground(ViewPort& view)
+{
+	Rectangle source = {0, 0, (float)view.bg_tex->width, (float)view.bg_tex->height};
+	Rectangle dest = {0, 0, view.screenW, view.screenH};
+	DrawTexturePro(*view.bg_tex, source, dest, {0, 0}, 0, WHITE);
+}
+
 void	Render::DrawBall(ViewPort& view, PhysicsState& state)
 {
 	DrawCircle
@@ -48,6 +55,7 @@ void	Render::DrawPaddle(ViewPort& view, PhysicsState& state)
 void	Render::DrawGame(ViewPort& view, PhysicsState& state)
 {
 	Render::DrawBorder(view);
+	Render::DrawBackground(view);
 	Render::DrawBall(view, state);
 	Render::DrawPaddle(view, state);
 }

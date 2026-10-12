@@ -46,9 +46,12 @@ int main()
 	SetTargetFPS(FPS);
 
 	// Texture init
+	const Texture2D bg_tex = LoadTexture(ASSETS_PATH "/Clouds/1.png");
+	// const Texture2D cloud_tex = LoadTexture(ASSETS_PATH "/Clouds/3.png");
 	const Texture2D paddle_tex = LoadTexture(ASSETS_PATH "/Paddle.png");
 	game.current_state.left_paddle.tex = &paddle_tex;
 	game.current_state.right_paddle.tex = &paddle_tex;
+	view.bg_tex = &bg_tex;
 
 	while (!WindowShouldClose())
 	{
@@ -87,7 +90,7 @@ int main()
 		// draw
 		BeginDrawing();
 
-			ClearBackground(GRAY);
+			ClearBackground(BLACK);
 
 			game.render(view, state);
 
